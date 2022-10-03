@@ -8,15 +8,13 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class MainTest {
-// Quand je recois un message avec un index déjà existant, je l'écrase, je renvois succes et je renvois le terme actuel
-// Quand je recois un message avec un index précédent que je ne connais pas, (j'ai la commande 1 2 et 3, et je recois 5 avec un prevLogIndex à 4), je renvois false
+  private static final int CURRENT_TERM = 2;
 // Quand je recois un message avec un index précédent que je ne connais, mais un prevLogTerm différent, je renvois false
 // Quand je recois un message commité 10 et que je contient 10 messages, j'update mon commit à 10
 // Quand je revois un message commité à 10, que mon dernier message est 8, que last commit et 7, j'update le commit à 8
+// Quand un client me demande un état, je renvois l'état de tout les logs commités
 
   // la suite pour les message commit en rattrapage
-
-
 
 
   @DisplayName("Quand je recois un heartbeat (message sans entries), je renvois succes, je renvois le term actuel  et je ne stock rien")
@@ -26,7 +24,7 @@ class MainTest {
     Node node = new Node(0);
 
     // when
-    Result result = node.appendEntries(new Entries(), 0);
+    Result result = node.appendEntries(new Entries(), 0, 0);
 
     // then
     assertTrue(result.getStatus());
@@ -40,7 +38,7 @@ class MainTest {
     Node node = new Node(1);
 
     // when
-    Result result = node.appendEntries(new Entries(),0);
+    Result result = node.appendEntries(new Entries(), 0, 0);
 
     // then
     assertFalse(result.getStatus());
@@ -54,7 +52,7 @@ class MainTest {
     Node node = new Node(1);
 
     // when
-    Result result = node.appendEntries(new Entries(),2);
+    Result result = node.appendEntries(new Entries(), 2, 0);
 
     // then
     assertTrue(result.getStatus());
@@ -69,7 +67,7 @@ class MainTest {
     Node node = new Node(1);
 
     // when
-    node.appendEntries(new Entries("pizza"),2);
+    node.appendEntries(new Entries("pizza"), 2, 0);
 
     // then
     assertEquals(node.getEntries(), List.of("pizza"));
@@ -82,7 +80,7 @@ class MainTest {
     Node node = new Node(1);
 
     // when
-    node.appendEntries(new Entries(), 1);
+    node.appendEntries(new Entries(), 1, 0);
 
     // then
     assertTrue(node.getEntries().isEmpty());
@@ -95,11 +93,101 @@ class MainTest {
     Node node = new Node(2);
 
     // when
-    Result result = node.appendEntries(new Entries("pizza"), 1);
+    Result result = node.appendEntries(new Entries("pizza"), 1, 0);
 
     // then
     assertFalse(result.getStatus());
     assertTrue(node.getEntries().isEmpty());
   }
 
+  @DisplayName("Quand je recois un message avec un index qui correspond au premier message existant, je l'écrase, je renvoie succes")
+  @Test
+  void test11() {
+    // given
+    Node node = new Node(CURRENT_TERM);
+    Entries pizza = new Entries("pizza");
+    node.appendEntries(pizza, CURRENT_TERM, 0);
+    Entries pomme = new Entries("pomme");
+
+    // when
+    Result result = node.appendEntries(pomme, CURRENT_TERM, 0);
+
+    // then
+    assertEquals(1, node.getEntries().size());
+    assertEquals(pomme.getValue(), node.getEntries().get(0));
+    assertTrue(result.getStatus());
+  }
+
+  @DisplayName("Quand je reçois un message avec preLogIndex égal à 1 avec un liste d'entries de taille 4, j'écrase le message index 2 et je renvoie succes")
+  @Test
+  void test12() {
+    // given
+    Node node = new Node(CURRENT_TERM);
+    Entries pizza1 = new Entries("pizza1");
+    Entries pizza2 = new Entries("pizza2");
+    Entries pizza3 = new Entries("pizza3");
+    Entries pizza4 = new Entries("pizza4");
+    node.appendEntries(pizza1, CURRENT_TERM, 0);
+    node.appendEntries(pizza2, CURRENT_TERM, 1);
+    node.appendEntries(pizza3, CURRENT_TERM, 2);
+    node.appendEntries(pizza4, CURRENT_TERM, 3);
+    Entries pomme = new Entries("pomme");
+
+    // when
+    Result result = node.appendEntries(pomme, CURRENT_TERM, 1);
+
+    // then
+    assertEquals(4, node.getEntries().size());
+    assertEquals(pizza1.getValue(), node.getEntries().get(0));
+    assertEquals(pomme.getValue(), node.getEntries().get(1));
+    assertEquals(pizza3.getValue(), node.getEntries().get(2));
+    assertEquals(pizza4.getValue(), node.getEntries().get(3));
+    assertTrue(result.getStatus());
+  }
+
+  @DisplayName("Quand je reçois 4 messages, liste d'entries est bonne et de taille 4")
+  @Test
+  void test13() {
+    // given
+    Node node = new Node(CURRENT_TERM);
+    Entries pizza1 = new Entries("pizza1");
+    Entries pizza2 = new Entries("pizza2");
+    Entries pizza3 = new Entries("pizza3");
+    Entries pizza4 = new Entries("pizza4");
+
+    // when
+    node.appendEntries(pizza1, CURRENT_TERM, 0);
+    node.appendEntries(pizza2, CURRENT_TERM, 1);
+    node.appendEntries(pizza3, CURRENT_TERM, 2);
+    node.appendEntries(pizza4, CURRENT_TERM, 3);
+
+    // then
+    assertEquals(4, node.getEntries().size());
+    assertEquals(pizza1.getValue(), node.getEntries().get(0));
+    assertEquals(pizza2.getValue(), node.getEntries().get(1));
+    assertEquals(pizza3.getValue(), node.getEntries().get(2));
+    assertEquals(pizza4.getValue(), node.getEntries().get(3));
+  }
+
+  //
+  @DisplayName("Quand je recois un message avec un index précédent que je ne connais pas, (j'ai la commande 1 2 et 3, et je recois 5 avec un prevLogIndex à 4), je renvois false")
+  @Test
+  void test14() {
+    // given
+    Node node = new Node(CURRENT_TERM);
+    Entries pizza1 = new Entries("pizza1");
+    Entries pizza2 = new Entries("pizza2");
+    Entries pizza3 = new Entries("pizza3");
+    node.appendEntries(pizza1, CURRENT_TERM, 0);
+    node.appendEntries(pizza2, CURRENT_TERM, 1);
+
+    // when
+    Result result = node.appendEntries(pizza3, CURRENT_TERM, 3);
+
+    // then
+    assertFalse(result.getStatus());
+    assertEquals(2, node.getEntries().size());
+    assertEquals(pizza1.getValue(), node.getEntries().get(0));
+    assertEquals(pizza2.getValue(), node.getEntries().get(1));
+  }
 }

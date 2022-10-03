@@ -1,7 +1,6 @@
 package octo.raft;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class Node {
@@ -13,15 +12,35 @@ public class Node {
     this.entries = new ArrayList<>();
   }
 
-  public Result appendEntries(Entries entries, int term) {
+  public Result appendEntries(Entries entries, int term, int prevLogIndex) {
     if (term >= this.currentTerm) {
-      if(!entries.isHeartbeat()){
-        this.entries.add(entries.getValue());
+      if (!entries.isHeartbeat()) {
+        if (isNewEntry(prevLogIndex)) {
+          this.entries.add(entries.getValue());
+        } else {
+          if (isPrevLogIndexKnown(prevLogIndex)){
+            this.entries.set(prevLogIndex, entries.getValue());
+          } else{
+            return new Result(false, this.currentTerm);
+          }
+        }
       }
       this.currentTerm = term;
       return new Result(true, term);
     }
     return new Result(false, this.currentTerm);
+  }
+
+  private boolean isPrevLogIndexKnown(int prevLogIndex) {
+    return prevLogIndex < getLastIndex();
+  }
+
+  private boolean isNewEntry(int prevLogIndex) {
+    return prevLogIndex == getLastIndex();
+  }
+
+  private int getLastIndex() {
+    return this.entries.size();
   }
 
   public int getCurrentTerm() {
