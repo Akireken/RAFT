@@ -10,7 +10,9 @@ import static org.junit.jupiter.api.Assertions.*;
 class MainTest {
 // Quand je recois un message avec un index déjà existant, je l'écrase, je renvois succes et je renvois le terme actuel
 // Quand je recois un message avec un index précédent que je ne connais pas, (j'ai la commande 1 2 et 3, et je recois 5 avec un prevLogIndex à 4), je renvois false
+// Quand je recois un message avec un index précédent que je ne connais, mais un prevLogTerm différent, je renvois false
 // Quand je recois un message commité 10 et que je contient 10 messages, j'update mon commit à 10
+// Quand je revois un message commité à 10, que mon dernier message est 8, que last commit et 7, j'update le commit à 8
 
   // la suite pour les message commit en rattrapage
 
