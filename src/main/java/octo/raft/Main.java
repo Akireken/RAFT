@@ -9,6 +9,7 @@ import java.util.concurrent.Executors;
 
 public class Main {
 
+  private static final int DEFAULT_FOR_NOW = 0;
   private static Random rand = new Random();
 
   public static void main(String[] args) throws InterruptedException {
@@ -18,7 +19,7 @@ public class Main {
     List<Node> cluster = List.of(node1, node2, node3);
 
     Executors.newCachedThreadPool().execute(() -> {
-        doStuff(cluster);
+      doStuff(cluster);
     });
 
     ConsoleView view = new ConsoleView();
@@ -26,7 +27,7 @@ public class Main {
   }
 
   private static void doStuff(List<Node> cluster) {
-    while(true){
+    while (true) {
       try {
         Thread.sleep(200);
       } catch (InterruptedException e) {
@@ -35,9 +36,10 @@ public class Main {
       String generatedString = RandomStringUtils.randomAlphanumeric(10);
       Entries entry = new Entries(generatedString);
       int term = rand.nextInt(2022);
-      for(Node node : cluster){
-        if(rand.nextInt(10)>=1){
-          node.appendEntries(entry, term);
+      for (Node node : cluster) {
+        if (rand.nextInt(10) >= 1) {
+          // TODO : prevlogindex par defaut
+          node.appendEntries(entry, term, DEFAULT_FOR_NOW);
         }
       }
     }
