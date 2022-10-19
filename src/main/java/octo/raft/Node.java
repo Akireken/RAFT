@@ -12,7 +12,7 @@ public class Node {
     this.entries = new ArrayList<>();
   }
 
-  public Result appendEntries(Entries entries, int term, int prevLogIndex) {
+  public Result appendEntries(Entries entries, int term, int prevLogIndex, int i) {
     if (term >= this.currentTerm) {
       if (!entries.isHeartbeat()) {
         if (isNewEntry(prevLogIndex)) {
