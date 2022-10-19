@@ -208,4 +208,25 @@ class MainTest {
     assertEquals(1, node.getEntries().size());
     assertEquals(pizza1.getValue(), node.getEntries().get(0));
   }
+
+  @DisplayName("Quand je recois un message avec un index précédent que je connais, mais un prevLogTerm différent, je renvois false")
+  @Test
+  void test16() {
+    // given
+    Node node = new Node(1);
+    Entries pizza1 = new Entries("pizza1");
+    Entries pizza2 = new Entries("pizza2");
+    Entries pizza3 = new Entries("pizza3");
+
+    node.appendEntries(pizza1, 1, 0, 1);
+    node.appendEntries(pizza2, 1, 1, 1);
+
+    // when
+    Result result = node.appendEntries(pizza3, 2, 2, 2);
+
+    // then
+    assertFalse(result.getStatus());
+    assertEquals(2, node.getEntries().size());
+    assertEquals(pizza1.getValue(), node.getEntries().get(0));
+  }
 }

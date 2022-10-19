@@ -12,26 +12,25 @@ public class Node {
     this.entries = new ArrayList<>();
   }
 
-  public Result appendEntries(Entries entries, int term, int prevLogIndex, int prevLogTerm) {
-    if (term >= this.currentTerm) {
-      if (!entries.isHeartbeat()) {
-        if(prevLogTerm != 0){
-          return new Result(false, getCurrentTerm());
-        }
-        if (isNewEntry(prevLogIndex)) {
-          this.entries.add(entries.getValue());
-        } else {
-          if (isPrevLogIndexKnown(prevLogIndex)){
-            this.entries.set(prevLogIndex, entries.getValue());
-          } else{
-            return new Result(false, this.currentTerm);
-          }
-        }
-      }
-      this.currentTerm = term;
-      return new Result(true, term);
+  public Result appendEntries(Entries entries, int leaderTerm, int prevLogIndex, int prevLogTerm) {
+    if (leaderTerm < this.currentTerm) {
+      return new Result(false, this.currentTerm);
     }
-    return new Result(false, this.currentTerm);
+    if (!entries.isHeartbeat()) {
+      if(prevLogTerm != 0){
+        return new Result(false, getCurrentTerm());
+      }
+      if (!isNewEntry(prevLogIndex)) {
+        if (!isPrevLogIndexKnown(prevLogIndex)) {
+          return new Result(false, this.currentTerm);
+        } else {
+          this.entries.set(prevLogIndex, entries.getValue());
+        }
+      } else {
+        this.entries.add(entries.getValue());      }
+    }
+    this.currentTerm = leaderTerm;
+    return new Result(true, leaderTerm);
   }
 
   private boolean isPrevLogIndexKnown(int prevLogIndex) {
