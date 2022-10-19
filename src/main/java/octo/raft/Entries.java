@@ -7,7 +7,7 @@ public class Entries {
     this.value = value;
   }
 
-  public Entries() {
+  public Entries(String pizza1, int i) {
 
   }
 

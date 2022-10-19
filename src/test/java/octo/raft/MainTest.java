@@ -24,7 +24,7 @@ class MainTest {
     Node node = new Node(0);
 
     // when
-    Result result = node.appendEntries(new Entries(), 0, 0, 0);
+    Result result = node.appendEntries(new Entries("pizza1", 0), 0, 0, 0);
 
     // then
     assertTrue(result.getStatus());
@@ -38,7 +38,7 @@ class MainTest {
     Node node = new Node(1);
 
     // when
-    Result result = node.appendEntries(new Entries(), 0, 0, 0);
+    Result result = node.appendEntries(new Entries("pizza1", 0), 0, 0, 0);
 
     // then
     assertFalse(result.getStatus());
@@ -52,7 +52,7 @@ class MainTest {
     Node node = new Node(1);
 
     // when
-    Result result = node.appendEntries(new Entries(), 2, 0, 0);
+    Result result = node.appendEntries(new Entries("pizza1", 0), 2, 0, 0);
 
     // then
     assertTrue(result.getStatus());
@@ -80,7 +80,7 @@ class MainTest {
     Node node = new Node(1);
 
     // when
-    node.appendEntries(new Entries(), 1, 0, 0);
+    node.appendEntries(new Entries("pizza1", 0), 1, 0, 0);
 
     // then
     assertTrue(node.getEntries().isEmpty());
@@ -201,7 +201,7 @@ class MainTest {
     node.appendEntries(pizza1, CURRENT_TERM, 0, 0);
 
     // when
-    Result result = node.appendEntries(pizza2, 20, 2, 0);
+    Result result = node.appendEntries(pizza2, CURRENT_TERM, 1, 1);
 
     // then
     assertFalse(result.getStatus());
