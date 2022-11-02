@@ -8,8 +8,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class MainTest {
-  private static final int CURRENT_TERM = 2;
-// Quand je recois un message avec un index précédent que je connais, mais un prevLogTerm différent, je renvois false
+  // Quand je recois un message avec un index précédent que je connais, mais un prevLogTerm différent, je renvois false
 // Quand je recois un message commité 10 et que je contient 10 messages, j'update mon commit à 10
 // Quand je revois un message commité à 10, que mon dernier message est 8, que last commit et 7, j'update le commit à 8
 // Quand un client me demande un état, je renvois l'état de tout les logs commités
@@ -54,7 +53,7 @@ class MainTest {
     Node node = new Node(1);
 
     // when
-    Result result = node.appendEntries(new Entries(null), 2, 0, 0);
+    Result result = node.appendEntries(new Entries(null, 0), 2, 0, 0);
 
     // then
     assertTrue(result.getStatus());
@@ -69,7 +68,7 @@ class MainTest {
     Node node = new Node(1);
 
     // when
-    Result result = node.appendEntries(new Entries("pizza1"), 2, 0, 0);
+    Result result = node.appendEntries(new Entries("pizza1", 0), 2, 0, 0);
 
     // then
     assertTrue(result.getStatus());
@@ -84,10 +83,11 @@ class MainTest {
     Node node = new Node(1);
 
     // when
-    node.appendEntries(new Entries("pizza"), 2, 0, 0);
+    Entries pizza = new Entries("pizza", 0);
+    node.appendEntries(pizza, 2, 0, 0);
 
     // then
-    assertEquals(node.getEntries(), List.of("pizza"));
+    assertEquals(node.getEntries(), List.of(pizza));
   }
 
   @DisplayName("Quand je reçois un heartbeat je ne touche pas aux entries")
@@ -110,7 +110,7 @@ class MainTest {
     Node node = new Node(2);
 
     // when
-    Result result = node.appendEntries(new Entries("pizza"), 1, 0, 0);
+    Result result = node.appendEntries(new Entries("pizza", 0), 1, 0, 0);
 
     // then
     assertFalse(result.getStatus());
@@ -121,17 +121,17 @@ class MainTest {
   @Test
   void test11() {
     // given
-    Node node = new Node(CURRENT_TERM);
-    Entries pizza = new Entries("pizza");
-    node.appendEntries(pizza, CURRENT_TERM, 0, 0);
-    Entries pomme = new Entries("pomme");
+    Node node = new Node(2);
+    Entries pizza = new Entries("pizza", 0);
+    node.appendEntries(pizza, 2, 0, 0);
+    Entries pomme = new Entries("pomme", 0);
 
     // when
-    Result result = node.appendEntries(pomme, CURRENT_TERM, 0, 0);
+    Result result = node.appendEntries(pomme, 2, 0, 0);
 
     // then
     assertEquals(1, node.getEntries().size());
-    assertEquals(pomme.getValue(), node.getEntries().get(0));
+    assertEquals(pomme.getValue(), node.getEntries().get(0).getValue());
     assertTrue(result.getStatus());
   }
 
@@ -139,26 +139,26 @@ class MainTest {
   @Test
   void test12() {
     // given
-    Node node = new Node(CURRENT_TERM);
-    Entries pizza1 = new Entries("pizza1");
-    Entries pizza2 = new Entries("pizza2");
-    Entries pizza3 = new Entries("pizza3");
-    Entries pizza4 = new Entries("pizza4");
-    node.appendEntries(pizza1, CURRENT_TERM, 0, 0);
-    node.appendEntries(pizza2, CURRENT_TERM, 1, 0);
-    node.appendEntries(pizza3, CURRENT_TERM, 2, 0);
-    node.appendEntries(pizza4, CURRENT_TERM, 3, 0);
-    Entries pomme = new Entries("pomme");
+    Node node = new Node(2);
+    Entries pizza1 = new Entries("pizza1", 0);
+    Entries pizza2 = new Entries("pizza2", 0);
+    Entries pizza3 = new Entries("pizza3", 0);
+    Entries pizza4 = new Entries("pizza4", 0);
+    node.appendEntries(pizza1, 2, 0, 0);
+    node.appendEntries(pizza2, 2, 1, 0);
+    node.appendEntries(pizza3, 2, 2, 0);
+    node.appendEntries(pizza4, 2, 3, 0);
+    Entries pomme = new Entries("pomme", 0);
 
     // when
-    Result result = node.appendEntries(pomme, CURRENT_TERM, 1, 0);
+    Result result = node.appendEntries(pomme, 2, 1, 0);
 
     // then
     assertEquals(4, node.getEntries().size());
-    assertEquals(pizza1.getValue(), node.getEntries().get(0));
-    assertEquals(pomme.getValue(), node.getEntries().get(1));
-    assertEquals(pizza3.getValue(), node.getEntries().get(2));
-    assertEquals(pizza4.getValue(), node.getEntries().get(3));
+    assertEquals(pizza1.getValue(), node.getEntries().get(0).getValue());
+    assertEquals(pomme.getValue(), node.getEntries().get(1).getValue());
+    assertEquals(pizza3.getValue(), node.getEntries().get(2).getValue());
+    assertEquals(pizza4.getValue(), node.getEntries().get(3).getValue());
     assertTrue(result.getStatus());
   }
 
@@ -166,24 +166,24 @@ class MainTest {
   @Test
   void test13() {
     // given
-    Node node = new Node(CURRENT_TERM);
-    Entries pizza1 = new Entries("pizza1");
-    Entries pizza2 = new Entries("pizza2");
-    Entries pizza3 = new Entries("pizza3");
-    Entries pizza4 = new Entries("pizza4");
+    Node node = new Node(2);
+    Entries pizza1 = new Entries("pizza1", 0);
+    Entries pizza2 = new Entries("pizza2", 0);
+    Entries pizza3 = new Entries("pizza3", 0);
+    Entries pizza4 = new Entries("pizza4", 0);
 
     // when
-    node.appendEntries(pizza1, CURRENT_TERM, 0, 0);
-    node.appendEntries(pizza2, CURRENT_TERM, 1, 0);
-    node.appendEntries(pizza3, CURRENT_TERM, 2, 0);
-    node.appendEntries(pizza4, CURRENT_TERM, 3, 0);
+    node.appendEntries(pizza1, 2, 0, 0);
+    node.appendEntries(pizza2, 2, 1, 0);
+    node.appendEntries(pizza3, 2, 2, 0);
+    node.appendEntries(pizza4, 2, 3, 0);
 
     // then
     assertEquals(4, node.getEntries().size());
-    assertEquals(pizza1.getValue(), node.getEntries().get(0));
-    assertEquals(pizza2.getValue(), node.getEntries().get(1));
-    assertEquals(pizza3.getValue(), node.getEntries().get(2));
-    assertEquals(pizza4.getValue(), node.getEntries().get(3));
+    assertEquals(pizza1.getValue(), node.getEntries().get(0).getValue());
+    assertEquals(pizza2.getValue(), node.getEntries().get(1).getValue());
+    assertEquals(pizza3.getValue(), node.getEntries().get(2).getValue());
+    assertEquals(pizza4.getValue(), node.getEntries().get(3).getValue());
   }
 
   //
@@ -191,39 +191,39 @@ class MainTest {
   @Test
   void test14() {
     // given
-    Node node = new Node(CURRENT_TERM);
-    Entries pizza1 = new Entries("pizza1");
-    Entries pizza2 = new Entries("pizza2");
-    Entries pizza3 = new Entries("pizza3");
-    node.appendEntries(pizza1, CURRENT_TERM, 0, 0);
-    node.appendEntries(pizza2, CURRENT_TERM, 1, 0);
+    Node node = new Node(2);
+    Entries pizza1 = new Entries("pizza1", 0);
+    Entries pizza2 = new Entries("pizza2", 0);
+    Entries pizza3 = new Entries("pizza3", 0);
+    node.appendEntries(pizza1, 2, 0, 0);
+    node.appendEntries(pizza2, 2, 1, 0);
 
     // when
-    Result result = node.appendEntries(pizza3, CURRENT_TERM, 3, 0);
+    Result result = node.appendEntries(pizza3, 2, 3, 0);
 
     // then
     assertFalse(result.getStatus());
     assertEquals(2, node.getEntries().size());
-    assertEquals(pizza1.getValue(), node.getEntries().get(0));
-    assertEquals(pizza2.getValue(), node.getEntries().get(1));
+    assertEquals(pizza1.getValue(), node.getEntries().get(0).getValue());
+    assertEquals(pizza2.getValue(), node.getEntries().get(1).getValue());
   }
 
-  @DisplayName("Quand je recois un message avec un index précédent que je connais, mais un prevLogTerm différent, je renvois false")
+  @DisplayName("Quand je recois un message avec un index précédent que je connais (à 0), mais un prevLogTerm différent (à 1 au lieu de 0), je renvois false")
   @Test
   void test15() {
     // given
-    Node node = new Node(CURRENT_TERM);
-    Entries pizza1 = new Entries("pizza1");
-    Entries pizza2 = new Entries("pizza2");
-    node.appendEntries(pizza1, CURRENT_TERM, 0, 0);
+    Node node = new Node(2);
+    Entries pizza1 = new Entries("pizza1", 0);
+    Entries pizza2 = new Entries("pizza2", 1);
+    node.appendEntries(pizza1, 2, 0, 0);
 
     // when
-    Result result = node.appendEntries(pizza2, CURRENT_TERM, 1, 1);
+    Result result = node.appendEntries(pizza2, 2, 1, 1);
 
     // then
     assertFalse(result.getStatus());
     assertEquals(1, node.getEntries().size());
-    assertEquals(pizza1.getValue(), node.getEntries().get(0));
+    assertEquals(pizza1.getValue(), node.getEntries().get(0).getValue());
   }
 
   /*@DisplayName("Quand je recois un message avec un index précédent que je connais, mais un prevLogTerm différent, je renvois false")

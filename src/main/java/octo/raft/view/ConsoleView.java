@@ -45,7 +45,7 @@ public class ConsoleView {
     private String getLastEntry(Node node){
         int size = node.getEntries().size();
         if(size == 0) return "";
-        return node.getEntries().get(size - 1);
+        return node.getEntries().get(size - 1).getValue();
     }
 
     private void cleanConsole(List<Node> nodes){

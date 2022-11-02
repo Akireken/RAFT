@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Node {
   private int currentTerm;
-  private final List<String> entries;
+  private final List<Entries> entries;
 
   public Node(int currentTerm) {
     this.currentTerm = currentTerm;
@@ -16,21 +16,25 @@ public class Node {
     if (leaderTerm < this.currentTerm) {
       return new Result(false, this.currentTerm);
     }
+    if(prevLogTerm != 0){
+      return new Result(false, this.currentTerm);
+    }
+    if (!isNewEntry(prevLogIndex) && !isPrevLogIndexKnown(prevLogIndex)) {
+      return new Result(false, this.currentTerm);
+    }
     if (!entries.isHeartbeat()) {
-      if(prevLogTerm != 0){
-        return new Result(false, getCurrentTerm());
-      }
-      if (!isNewEntry(prevLogIndex)) {
-        if (!isPrevLogIndexKnown(prevLogIndex)) {
-          return new Result(false, this.currentTerm);
-        } else {
-          this.entries.set(prevLogIndex, entries.getValue());
-        }
-      } else {
-        this.entries.add(entries.getValue());      }
+      appendOrReplace(entries, prevLogIndex);
     }
     this.currentTerm = leaderTerm;
     return new Result(true, leaderTerm);
+  }
+
+  private void appendOrReplace(Entries entries, int prevLogIndex) {
+    if(isPrevLogIndexKnown(prevLogIndex)) {
+      this.entries.set(prevLogIndex, entries);
+    } else {
+      this.entries.add(entries);
+    }
   }
 
   private boolean isPrevLogIndexKnown(int prevLogIndex) {
@@ -49,7 +53,7 @@ public class Node {
     return this.currentTerm;
   }
 
-  public List<String> getEntries() {
+  public List<Entries> getEntries() {
     return this.entries;
   }
 }
