@@ -34,7 +34,7 @@ public class Main {
         e.printStackTrace();
       }
       String generatedString = RandomStringUtils.randomAlphanumeric(10);
-      Entries entry = new Entries(generatedString, 0);
+      Entry entry = new Entry(generatedString, 0);
       int term = rand.nextInt(2022);
       for (Node node : cluster) {
         if (rand.nextInt(10) >= 1) {

@@ -25,7 +25,7 @@ class MainTest {
     Node node = new Node(0);
 
     // when
-    Result result = node.appendEntries(new Entries(), 0, 0, 0);
+    Result result = node.appendEntries(new Entry(), 0, 0, 0);
 
     // then
     assertTrue(result.getStatus());
@@ -39,7 +39,7 @@ class MainTest {
     Node node = new Node(1);
 
     // when
-    Result result = node.appendEntries(new Entries(), 0, 0, 0);
+    Result result = node.appendEntries(new Entry(), 0, 0, 0);
 
     // then
     assertFalse(result.getStatus());
@@ -53,7 +53,7 @@ class MainTest {
     Node node = new Node(1);
 
     // when
-    Result result = node.appendEntries(new Entries(null, 0), 2, 0, 0);
+    Result result = node.appendEntries(new Entry(null, 0), 2, 0, 0);
 
     // then
     assertTrue(result.getStatus());
@@ -68,7 +68,7 @@ class MainTest {
     Node node = new Node(1);
 
     // when
-    Result result = node.appendEntries(new Entries("pizza1", 0), 2, 0, 0);
+    Result result = node.appendEntries(new Entry("pizza1", 0), 2, 0, 0);
 
     // then
     assertTrue(result.getStatus());
@@ -83,7 +83,7 @@ class MainTest {
     Node node = new Node(1);
 
     // when
-    Entries pizza = new Entries("pizza", 0);
+    Entry pizza = new Entry("pizza", 0);
     node.appendEntries(pizza, 2, 0, 0);
 
     // then
@@ -97,7 +97,7 @@ class MainTest {
     Node node = new Node(1);
 
     // when
-    node.appendEntries(new Entries(), 1, 0, 0);
+    node.appendEntries(new Entry(), 1, 0, 0);
 
     // then
     assertTrue(node.getEntries().isEmpty());
@@ -110,7 +110,7 @@ class MainTest {
     Node node = new Node(2);
 
     // when
-    Result result = node.appendEntries(new Entries("pizza", 0), 1, 0, 0);
+    Result result = node.appendEntries(new Entry("pizza", 0), 1, 0, 0);
 
     // then
     assertFalse(result.getStatus());
@@ -122,9 +122,9 @@ class MainTest {
   void test11() {
     // given
     Node node = new Node(2);
-    Entries pizza = new Entries("pizza", 0);
+    Entry pizza = new Entry("pizza", 0);
     node.appendEntries(pizza, 2, 0, 0);
-    Entries pomme = new Entries("pomme", 0);
+    Entry pomme = new Entry("pomme", 0);
 
     // when
     Result result = node.appendEntries(pomme, 2, 0, 0);
@@ -140,15 +140,15 @@ class MainTest {
   void test12() {
     // given
     Node node = new Node(2);
-    Entries pizza1 = new Entries("pizza1", 0);
-    Entries pizza2 = new Entries("pizza2", 0);
-    Entries pizza3 = new Entries("pizza3", 0);
-    Entries pizza4 = new Entries("pizza4", 0);
+    Entry pizza1 = new Entry("pizza1", 0);
+    Entry pizza2 = new Entry("pizza2", 0);
+    Entry pizza3 = new Entry("pizza3", 0);
+    Entry pizza4 = new Entry("pizza4", 0);
     node.appendEntries(pizza1, 2, 0, 0);
     node.appendEntries(pizza2, 2, 1, 0);
     node.appendEntries(pizza3, 2, 2, 0);
     node.appendEntries(pizza4, 2, 3, 0);
-    Entries pomme = new Entries("pomme", 0);
+    Entry pomme = new Entry("pomme", 0);
 
     // when
     Result result = node.appendEntries(pomme, 2, 1, 0);
@@ -167,10 +167,10 @@ class MainTest {
   void test13() {
     // given
     Node node = new Node(2);
-    Entries pizza1 = new Entries("pizza1", 0);
-    Entries pizza2 = new Entries("pizza2", 0);
-    Entries pizza3 = new Entries("pizza3", 0);
-    Entries pizza4 = new Entries("pizza4", 0);
+    Entry pizza1 = new Entry("pizza1", 0);
+    Entry pizza2 = new Entry("pizza2", 0);
+    Entry pizza3 = new Entry("pizza3", 0);
+    Entry pizza4 = new Entry("pizza4", 0);
 
     // when
     node.appendEntries(pizza1, 2, 0, 0);
@@ -192,9 +192,9 @@ class MainTest {
   void test14() {
     // given
     Node node = new Node(2);
-    Entries pizza1 = new Entries("pizza1", 0);
-    Entries pizza2 = new Entries("pizza2", 0);
-    Entries pizza3 = new Entries("pizza3", 0);
+    Entry pizza1 = new Entry("pizza1", 0);
+    Entry pizza2 = new Entry("pizza2", 0);
+    Entry pizza3 = new Entry("pizza3", 0);
     node.appendEntries(pizza1, 2, 0, 0);
     node.appendEntries(pizza2, 2, 1, 0);
 
@@ -208,13 +208,13 @@ class MainTest {
     assertEquals(pizza2.getValue(), node.getEntries().get(1).getValue());
   }
 
-  @DisplayName("Quand je recois un message avec un index précédent que je connais (à 0), mais un prevLogTerm différent (à 1 au lieu de 0), je renvois false")
+  @DisplayName("Quand je recois un message avec un index précédent que je connais (à 1), mais un prevLogTerm différent (à 1 au lieu de 0), je renvois false")
   @Test
   void test15() {
     // given
     Node node = new Node(2);
-    Entries pizza1 = new Entries("pizza1", 0);
-    Entries pizza2 = new Entries("pizza2", 1);
+    Entry pizza1 = new Entry("pizza1", 0);
+    Entry pizza2 = new Entry("pizza2", 1);
     node.appendEntries(pizza1, 2, 0, 0);
 
     // when
@@ -226,14 +226,14 @@ class MainTest {
     assertEquals(pizza1.getValue(), node.getEntries().get(0).getValue());
   }
 
-  /*@DisplayName("Quand je recois un message avec un index précédent que je connais, mais un prevLogTerm différent, je renvois false")
+  @DisplayName("Quand je recois un message avec un prevLogIndex que je connais (à 2), mais un prevLogTerm différent (à 2 au lieu de 1), je renvois false")
   @Test
   void test16() {
     // given
     Node node = new Node(0);
-    Entries pizza1 = new Entries("pizza1");
-    Entries pizza2 = new Entries("pizza2");
-    Entries pizza3 = new Entries("pizza3");
+    Entry pizza1 = new Entry("pizza1",1);
+    Entry pizza2 = new Entry("pizza2", 1);
+    Entry pizza3 = new Entry("pizza3",2);
 
     node.appendEntries(pizza1, 1, 0, 0);
     node.appendEntries(pizza2, 1, 1, 1);
@@ -244,7 +244,8 @@ class MainTest {
     // then
     assertFalse(result.getStatus());
     assertEquals(2, node.getEntries().size());
-    assertEquals(pizza1.getValue(), node.getEntries().get(0));
-  }*/
+    assertEquals(pizza1.getValue(), node.getEntries().get(0).getValue());
+    assertEquals(pizza2.getValue(), node.getEntries().get(1).getValue());
+  }
 
 }

@@ -1,15 +1,15 @@
 package octo.raft;
 
-public class Entries {
+public class Entry {
   private String value;
   private int term;
 
-  public Entries(String value, int terme) {
+  public Entry(String value, int terme) {
     this.value = value;
     this.term = terme;
   }
 
-  public Entries() {}
+  public Entry() {}
 
 
   public String getValue() {
@@ -18,5 +18,9 @@ public class Entries {
 
   public boolean isHeartbeat(){
     return this.value == null;
+  }
+
+  public int getTerm() {
+    return this.term;
   }
 }
