@@ -16,10 +16,10 @@ public class Node {
     if (leaderTerm < this.currentTerm) {
       return new Result(false, this.currentTerm);
     }
-    if(isPrevLogTermKnown(prevLogTerm, prevLogIndex)){
+    if (!isNewEntry(prevLogIndex) && isPrevLogIndexUnknown(prevLogIndex)) {
       return new Result(false, this.currentTerm);
     }
-    if (!isNewEntry(prevLogIndex) && !isPrevLogIndexKnown(prevLogIndex)) {
+    if(isNotFirstEntry(prevLogIndex) && isPrevLogTermUnKnown(prevLogTerm, prevLogIndex)){
       return new Result(false, this.currentTerm);
     }
     if (!entry.isHeartbeat()) {
@@ -29,23 +29,28 @@ public class Node {
     return new Result(true, leaderTerm);
   }
 
-  private boolean isPrevLogTermKnown(int prevLogTerm, int prevLogIndex) {
-    return this.entries.size() > 0
-      && prevLogIndex <= this.entries.size()
-      && prevLogIndex > 0
-      && prevLogTerm != this.entries.get(prevLogIndex-1).getTerm();
+  private boolean isPrevLogTermUnKnown(int prevLogTerm, int prevLogIndex) {
+    return prevLogTerm != this.entries.get(prevLogIndex-1).getTerm();
+  }
+
+  private boolean isNotFirstEntry(int prevLogIndex) {
+    return prevLogIndex > 0;
   }
 
   private void appendOrReplace(Entry entry, int prevLogIndex) {
-    if(isPrevLogIndexKnown(prevLogIndex)) {
+    if(isExistingEntry(prevLogIndex)) {
       this.entries.set(prevLogIndex, entry);
     } else {
       this.entries.add(entry);
     }
   }
 
-  private boolean isPrevLogIndexKnown(int prevLogIndex) {
-    return prevLogIndex < getLastIndex();
+  private boolean isPrevLogIndexUnknown(int prevLogIndex) {
+    return prevLogIndex >= getLastIndex();
+  }
+
+  private boolean isExistingEntry(int prevLogIndex) {
+    return !isPrevLogIndexUnknown(prevLogIndex);
   }
 
   private boolean isNewEntry(int prevLogIndex) {
