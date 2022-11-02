@@ -8,16 +8,13 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class MainTest {
-  // Quand je recois un message avec un index précédent que je connais, mais un prevLogTerm différent, je renvois false
 
-// Quand je dois remplacer un message existant, je dois vérifier que le message précédent matche le prevLogIndex et le prevLogTer
 // Quand je recois un message commité 10 et que je contient 10 messages, j'update mon commit à 10
 // Quand je revois un message commité à 10, que mon dernier message est 8, que last commit et 7, j'update le commit à 8
 // Quand un client me demande un état, je renvois l'état de tout les logs commités
 // la suite pour les message commit en rattrapage
-
 // Quand je n'ai pas de message et que j'ajoute un message avec un prevLogIndex différent de 0, je renvoie false
-// Quand je n'ai pas de message et que j'ajoute un message avec un prevLogTerm différent de 0, je renvoie false
+// T0D0 : comprendre à quoi sert la condition !isNewEntry(prevLogIndex)
 
 
   @DisplayName("Quand je recois un heartbeat (message sans entries), je renvois succes, je renvois le term actuel  et je ne stock rien")
