@@ -16,7 +16,7 @@ public class Node {
     if (leaderTerm < this.currentTerm) {
       return new Result(false, this.currentTerm);
     }
-    if(isPrevLogTermKnown(prevLogTerm)){
+    if(isPrevLogTermKnown(prevLogTerm, prevLogIndex)){
       return new Result(false, this.currentTerm);
     }
     if (!isNewEntry(prevLogIndex) && !isPrevLogIndexKnown(prevLogIndex)) {
@@ -29,8 +29,11 @@ public class Node {
     return new Result(true, leaderTerm);
   }
 
-  private boolean isPrevLogTermKnown(int prevLogTerm) {
-    return this.entries.size() > 0 && prevLogTerm != getLastEntry().getTerm();
+  private boolean isPrevLogTermKnown(int prevLogTerm, int prevLogIndex) {
+    return this.entries.size() > 0
+      && prevLogIndex <= this.entries.size()
+      && prevLogIndex > 0
+      && prevLogTerm != this.entries.get(prevLogIndex-1).getTerm();
   }
 
   private void appendOrReplace(Entry entry, int prevLogIndex) {

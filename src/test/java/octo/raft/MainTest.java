@@ -9,6 +9,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class MainTest {
   // Quand je recois un message avec un index précédent que je connais, mais un prevLogTerm différent, je renvois false
+
+// Quand je dois remplacer un message existant, je dois vérifier que le message précédent matche le prevLogIndex et le prevLogTer
 // Quand je recois un message commité 10 et que je contient 10 messages, j'update mon commit à 10
 // Quand je revois un message commité à 10, que mon dernier message est 8, que last commit et 7, j'update le commit à 8
 // Quand un client me demande un état, je renvois l'état de tout les logs commités
@@ -214,8 +216,9 @@ class MainTest {
     // given
     Node node = new Node(2);
     Entry pizza1 = new Entry("pizza1", 0);
-    Entry pizza2 = new Entry("pizza2", 1);
     node.appendEntries(pizza1, 2, 0, 0);
+
+    Entry pizza2 = new Entry("pizza2", 1);
 
     // when
     Result result = node.appendEntries(pizza2, 2, 1, 1);
@@ -246,6 +249,32 @@ class MainTest {
     assertEquals(2, node.getEntries().size());
     assertEquals(pizza1.getValue(), node.getEntries().get(0).getValue());
     assertEquals(pizza2.getValue(), node.getEntries().get(1).getValue());
+  }
+
+  @DisplayName("Quand je dois remplacer un message existant, je dois vérifier que le message précédent matche le prevLogIndex et le prevLogTerm.")
+  @Test
+  void test17() {
+    // given
+    Node node = new Node(0);
+    Entry pizza1 = new Entry("pizza1",1);
+    Entry pizza2 = new Entry("pizza2", 1);
+    Entry pizza3 = new Entry("pizza3",3);
+
+    node.appendEntries(pizza1, 1, 0, 0);
+    node.appendEntries(pizza2, 1, 1, 1);
+    node.appendEntries(pizza3, 1, 2, 1);
+
+    Entry pizza2Bis = new Entry("pizza2Bis",3);
+
+    // when
+    Result result = node.appendEntries(pizza2Bis, 3, 1, 3);
+
+    // then
+    assertFalse(result.getStatus());
+    assertEquals(3, node.getEntries().size());
+    assertEquals(pizza1.getValue(), node.getEntries().get(0).getValue());
+    assertEquals(pizza2.getValue(), node.getEntries().get(1).getValue());
+    assertEquals(pizza3.getValue(), node.getEntries().get(2).getValue());
   }
 
 }
