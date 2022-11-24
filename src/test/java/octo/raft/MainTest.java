@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class MainTest {
 
-// Quand je recois un message commité 10 et que je contient 10 messages, j'update mon commit à 10
+
 // Quand je revois un message commité à 10, que mon dernier message est 8, que last commit et 7, j'update le commit à 8
 // Quand un client me demande un état, je renvois l'état de tout les logs commités
 // la suite pour les message commit en rattrapage
@@ -24,7 +24,7 @@ class MainTest {
     Node node = new Node(0);
 
     // when
-    Result result = node.appendEntries(new Entry(), 0, 0, 0);
+    Result result = node.appendEntries(new Entry(), 0, 0, 0, 0);
 
     // then
     assertTrue(result.getStatus());
@@ -38,7 +38,7 @@ class MainTest {
     Node node = new Node(1);
 
     // when
-    Result result = node.appendEntries(new Entry(), 0, 0, 0);
+    Result result = node.appendEntries(new Entry(), 0, 0, 0, 0);
 
     // then
     assertFalse(result.getStatus());
@@ -52,7 +52,7 @@ class MainTest {
     Node node = new Node(1);
 
     // when
-    Result result = node.appendEntries(new Entry(null, 0), 2, 0, 0);
+    Result result = node.appendEntries(new Entry(null, 0), 2, 0, 0, 0);
 
     // then
     assertTrue(result.getStatus());
@@ -67,7 +67,7 @@ class MainTest {
     Node node = new Node(1);
 
     // when
-    Result result = node.appendEntries(new Entry("pizza1", 0), 2, 0, 0);
+    Result result = node.appendEntries(new Entry("pizza1", 0), 2, 0, 0, 0);
 
     // then
     assertTrue(result.getStatus());
@@ -83,7 +83,7 @@ class MainTest {
 
     // when
     Entry pizza = new Entry("pizza", 0);
-    node.appendEntries(pizza, 2, 0, 0);
+    node.appendEntries(pizza, 2, 0, 0, 0);
 
     // then
     assertEquals(node.getEntries(), List.of(pizza));
@@ -96,7 +96,7 @@ class MainTest {
     Node node = new Node(1);
 
     // when
-    node.appendEntries(new Entry(), 1, 0, 0);
+    node.appendEntries(new Entry(), 1, 0, 0, 0);
 
     // then
     assertTrue(node.getEntries().isEmpty());
@@ -109,7 +109,7 @@ class MainTest {
     Node node = new Node(2);
 
     // when
-    Result result = node.appendEntries(new Entry("pizza", 0), 1, 0, 0);
+    Result result = node.appendEntries(new Entry("pizza", 0), 1, 0, 0, 0);
 
     // then
     assertFalse(result.getStatus());
@@ -122,11 +122,11 @@ class MainTest {
     // given
     Node node = new Node(2);
     Entry pizza = new Entry("pizza", 0);
-    node.appendEntries(pizza, 2, 0, 0);
+    node.appendEntries(pizza, 2, 0, 0, 0);
     Entry pomme = new Entry("pomme", 0);
 
     // when
-    Result result = node.appendEntries(pomme, 2, 0, 0);
+    Result result = node.appendEntries(pomme, 2, 0, 0, 0);
 
     // then
     assertEquals(1, node.getEntries().size());
@@ -143,14 +143,14 @@ class MainTest {
     Entry pizza2 = new Entry("pizza2", 0);
     Entry pizza3 = new Entry("pizza3", 0);
     Entry pizza4 = new Entry("pizza4", 0);
-    node.appendEntries(pizza1, 2, 0, 0);
-    node.appendEntries(pizza2, 2, 1, 0);
-    node.appendEntries(pizza3, 2, 2, 0);
-    node.appendEntries(pizza4, 2, 3, 0);
+    node.appendEntries(pizza1, 2, 0, 0, 0);
+    node.appendEntries(pizza2, 2, 1, 0, 0);
+    node.appendEntries(pizza3, 2, 2, 0, 0);
+    node.appendEntries(pizza4, 2, 3, 0, 0);
     Entry pomme = new Entry("pomme", 0);
 
     // when
-    Result result = node.appendEntries(pomme, 2, 1, 0);
+    Result result = node.appendEntries(pomme, 2, 1, 0, 0);
 
     // then
     assertEquals(4, node.getEntries().size());
@@ -172,10 +172,10 @@ class MainTest {
     Entry pizza4 = new Entry("pizza4", 0);
 
     // when
-    node.appendEntries(pizza1, 2, 0, 0);
-    node.appendEntries(pizza2, 2, 1, 0);
-    node.appendEntries(pizza3, 2, 2, 0);
-    node.appendEntries(pizza4, 2, 3, 0);
+    node.appendEntries(pizza1, 2, 0, 0, 0);
+    node.appendEntries(pizza2, 2, 1, 0, 0);
+    node.appendEntries(pizza3, 2, 2, 0, 0);
+    node.appendEntries(pizza4, 2, 3, 0, 0);
 
     // then
     assertEquals(4, node.getEntries().size());
@@ -194,11 +194,11 @@ class MainTest {
     Entry pizza1 = new Entry("pizza1", 0);
     Entry pizza2 = new Entry("pizza2", 0);
     Entry pizza3 = new Entry("pizza3", 0);
-    node.appendEntries(pizza1, 2, 0, 0);
-    node.appendEntries(pizza2, 2, 1, 0);
+    node.appendEntries(pizza1, 2, 0, 0, 0);
+    node.appendEntries(pizza2, 2, 1, 0, 0);
 
     // when
-    Result result = node.appendEntries(pizza3, 2, 3, 0);
+    Result result = node.appendEntries(pizza3, 2, 3, 0, 0);
 
     // then
     assertFalse(result.getStatus());
@@ -213,12 +213,12 @@ class MainTest {
     // given
     Node node = new Node(2);
     Entry pizza1 = new Entry("pizza1", 0);
-    node.appendEntries(pizza1, 2, 0, 0);
+    node.appendEntries(pizza1, 2, 0, 0, 0);
 
     Entry pizza2 = new Entry("pizza2", 1);
 
     // when
-    Result result = node.appendEntries(pizza2, 2, 1, 1);
+    Result result = node.appendEntries(pizza2, 2, 1, 1, 0);
 
     // then
     assertFalse(result.getStatus());
@@ -235,11 +235,11 @@ class MainTest {
     Entry pizza2 = new Entry("pizza2", 1);
     Entry pizza3 = new Entry("pizza3",2);
 
-    node.appendEntries(pizza1, 1, 0, 0);
-    node.appendEntries(pizza2, 1, 1, 1);
+    node.appendEntries(pizza1, 1, 0, 0, 0);
+    node.appendEntries(pizza2, 1, 1, 1, 0);
 
     // when
-    Result result = node.appendEntries(pizza3, 2, 2, 2);
+    Result result = node.appendEntries(pizza3, 2, 2, 2, 0);
 
     // then
     assertFalse(result.getStatus());
@@ -257,14 +257,14 @@ class MainTest {
     Entry pizza2 = new Entry("pizza2", 1);
     Entry pizza3 = new Entry("pizza3",3);
 
-    node.appendEntries(pizza1, 1, 0, 0);
-    node.appendEntries(pizza2, 1, 1, 1);
-    node.appendEntries(pizza3, 1, 2, 1);
+    node.appendEntries(pizza1, 1, 0, 0, 0);
+    node.appendEntries(pizza2, 1, 1, 1, 0);
+    node.appendEntries(pizza3, 1, 2, 1, 0);
 
     Entry pizza2Bis = new Entry("pizza2Bis",3);
 
     // when
-    Result result = node.appendEntries(pizza2Bis, 3, 1, 3);
+    Result result = node.appendEntries(pizza2Bis, 3, 1, 3, 0);
 
     // then
     assertFalse(result.getStatus());
@@ -274,4 +274,19 @@ class MainTest {
     assertEquals(pizza3.getValue(), node.getEntries().get(2).getValue());
   }
 
+  // Quand je recois un message commité 10 et que je contient 10 messages, j'update mon commit à 10
+  @Test
+  @DisplayName("Quand le leader m'envoi un message avec un lastCommitIndex à 1, et que j'ai un message déjà stocké, je  recois un message commité 1, alors le lastCommitIndex du noeud passe à 1")
+  public void test_de_premier_message_commit() {
+    // given
+    Node node = new Node(0);
+    Entry message = new Entry("pizza1",0);
+    node.appendEntries(message, 0, 0, 0, 0);
+
+    //
+    Result result = node.appendEntries(new Entry(), 0, 1, 0, 1);
+
+    // then
+    assertEquals(node.getLastCommitIndex(), 1);
+  }
 }

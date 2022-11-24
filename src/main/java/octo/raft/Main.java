@@ -39,7 +39,7 @@ public class Main {
       for (Node node : cluster) {
         if (rand.nextInt(10) >= 1) {
           // TODO : prevlogindex par defaut
-          node.appendEntries(entry, term, DEFAULT_FOR_NOW, 0);
+          node.appendEntries(entry, term, DEFAULT_FOR_NOW, 0, 0);
         }
       }
     }

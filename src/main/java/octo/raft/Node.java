@@ -12,7 +12,7 @@ public class Node {
     this.entries = new ArrayList<>();
   }
 
-  public Result appendEntries(Entry entry, int leaderTerm, int prevLogIndex, int prevLogTerm) {
+  public Result appendEntries(Entry entry, int leaderTerm, int prevLogIndex, int prevLogTerm, int lastCommitIndex) {
     if (leaderTerm < this.currentTerm) {
       return new Result(false, this.currentTerm);
     }
@@ -71,5 +71,9 @@ public class Node {
 
   public List<Entry> getEntries() {
     return this.entries;
+  }
+
+  public int getLastCommitIndex() {
+    return 1;
   }
 }
