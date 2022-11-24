@@ -10,10 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class MainTest {
 
 
-// Quand je revois un message commité à 10, que mon dernier message est 8, que last commit et 7, j'update le commit à 8
 // Quand un client me demande un état, je renvois l'état de tout les logs commités
-// la suite pour les message commit en rattrapage
-// Quand je n'ai pas de message et que j'ajoute un message avec un prevLogIndex différent de 0, je renvoie false
 // T0D0 : comprendre à quoi sert la condition !isNewEntry(prevLogIndex)
 
 
@@ -29,6 +26,20 @@ class MainTest {
     // then
     assertTrue(result.getStatus());
     assertEquals(result.getTerm(), 0);
+  }
+
+  @DisplayName("Quand je n'ai pas de message et que j'ajoute un message avec un prevLogIndex différent de 0, je renvoie false")
+  @Test
+  void testPrevLogIndexInitialInvalid() {
+    // given
+    Node node = new Node(0);
+    Entry pizza = new Entry("pizza", 0);
+
+    // when
+    Result result = node.appendEntries(pizza, 0, 1, 0, 0);
+
+    // then
+    assertFalse(result.getStatus());
   }
 
   @DisplayName("Quand je recois un heartbeat  (message sans entries) d'un term précédent, je renvois false et je renvois le term actuel")
@@ -274,7 +285,6 @@ class MainTest {
     assertEquals(pizza3.getValue(), node.getEntries().get(2).getValue());
   }
 
-  // Quand je recois un message commité 10 et que je contient 10 messages, j'update mon commit à 10
   @Test
   @DisplayName("Quand le leader m'envoi un message avec un lastCommitIndex à 1, et que j'ai un message déjà stocké, je  recois un message commité 1, alors le lastCommitIndex du noeud passe à 1")
   public void test_de_premier_message_commit() {
@@ -283,10 +293,87 @@ class MainTest {
     Entry message = new Entry("pizza1",0);
     node.appendEntries(message, 0, 0, 0, 0);
 
-    //
+    // when
     Result result = node.appendEntries(new Entry(), 0, 1, 0, 1);
 
     // then
     assertEquals(node.getLastCommitIndex(), 1);
   }
+
+  @Test
+  @DisplayName("Quand le server démmare, lastCommitIndex est à 0")
+  public void test18() {
+    // when
+    Node node = new Node(0);
+
+    // then
+    assertEquals(node.getLastCommitIndex(), 0);
+  }
+
+  @Test
+  @DisplayName("Quand le lastCommitIndex est > au dernier logIndex alors le lastCommitIndex du noeud sera le dernier logIndex")
+  public void test19() {
+    // given
+    Node node = new Node(0);
+    Entry message = new Entry("pizza1",0);
+    node.appendEntries(message, 0, 0, 0, 0);
+
+    // when
+    node.appendEntries(new Entry(), 0, 1, 0, 3);
+
+    // then
+    assertEquals(node.getLastCommitIndex(), 1);
+  }
+
+  @Test
+  @DisplayName("Quand deux messages sont reçu avec un lastCommitIndex = 2, alors le lastCommitIndex du noeud doit être de 2")
+  public void test20() {
+    // given
+    Node node = new Node(0);
+    Entry message = new Entry("pizza1",0);
+    Entry message2 = new Entry("pizza2",0);
+    node.appendEntries(message, 0, 0, 0, 0);
+
+    // when
+    node.appendEntries(message2, 0, 1, 0, 2);;
+
+    // then
+    assertEquals(node.getLastCommitIndex(), 2);
+  }
+
+  @Test
+  @DisplayName("Quand trois messages sont reçu avec un lastCommitIndex = 2, alors le lastCommitIndex du noeud doit être de 2")
+  public void test21() {
+    // given
+    Node node = new Node(0);
+    Entry message = new Entry("pizza1",0);
+    Entry message2 = new Entry("pizza2",0);
+    Entry message3 = new Entry("pizza3",0);
+    node.appendEntries(message, 0, 0, 0, 0);
+    node.appendEntries(message2, 0, 1, 0, 0);
+
+    // when
+    node.appendEntries(message3, 0, 2, 0, 2);
+
+    // then
+    assertEquals(node.getLastCommitIndex(), 2);
+  }
+
+  @Test
+  @DisplayName("Quand on recois un message invalid pour cause de prevLogIndex invalid, le lastCommitIndex n'est pas mis à jour")
+  public void test22() {
+    // given
+    Node node = new Node(0);
+    Entry message = new Entry("pizza1",0);
+    Entry message3 = new Entry("pizza3",0);
+    node.appendEntries(message, 0, 0, 0, 0);
+
+    // when
+    Result result = node.appendEntries(message3, 0, 2, 0, 1);
+
+    // then
+    assertFalse(result.getStatus());
+    assertEquals(node.getLastCommitIndex(), 0);
+  }
+
 }

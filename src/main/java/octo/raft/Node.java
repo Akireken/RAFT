@@ -6,6 +6,7 @@ import java.util.List;
 public class Node {
   private int currentTerm;
   private final List<Entry> entries;
+  private int lastCommitIndex = 0;
 
   public Node(int currentTerm) {
     this.currentTerm = currentTerm;
@@ -16,17 +17,19 @@ public class Node {
     if (leaderTerm < this.currentTerm) {
       return new Result(false, this.currentTerm);
     }
-    if (!isNewEntry(prevLogIndex) && isPrevLogIndexUnknown(prevLogIndex)) {
-      return new Result(false, this.currentTerm);
-    }
-    if(isNotFirstEntry(prevLogIndex) && isPrevLogTermUnKnown(prevLogTerm, prevLogIndex)){
+    if(isPreviousEntryUnknown(prevLogIndex, prevLogTerm)){
       return new Result(false, this.currentTerm);
     }
     if (!entry.isHeartbeat()) {
       appendOrReplace(entry, prevLogIndex);
     }
+    this.lastCommitIndex = Math.min(lastCommitIndex, this.getLastIndex());
     this.currentTerm = leaderTerm;
     return new Result(true, leaderTerm);
+  }
+
+  private boolean isPreviousEntryUnknown(int prevLogIndex, int prevLogTerm) {
+    return isPrevLogIndexUnknown(prevLogIndex) || (isNotFirstEntry(prevLogIndex) && isPrevLogTermUnKnown(prevLogTerm, prevLogIndex));
   }
 
   private boolean isPrevLogTermUnKnown(int prevLogTerm, int prevLogIndex) {
@@ -46,11 +49,11 @@ public class Node {
   }
 
   private boolean isPrevLogIndexUnknown(int prevLogIndex) {
-    return prevLogIndex >= getLastIndex();
+    return prevLogIndex > getLastIndex();
   }
 
   private boolean isExistingEntry(int prevLogIndex) {
-    return !isPrevLogIndexUnknown(prevLogIndex);
+    return !(prevLogIndex >= getLastIndex());
   }
 
   private boolean isNewEntry(int prevLogIndex) {
@@ -59,10 +62,6 @@ public class Node {
 
   private int getLastIndex() {
     return this.entries.size();
-  }
-
-  private Entry getLastEntry() {
-    return this.entries.get(getLastIndex() - 1);
   }
 
   public int getCurrentTerm() {
@@ -74,6 +73,6 @@ public class Node {
   }
 
   public int getLastCommitIndex() {
-    return 1;
+    return this.lastCommitIndex;
   }
 }
