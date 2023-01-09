@@ -56,10 +56,6 @@ public class Node {
     return !(prevLogIndex >= getLastIndex());
   }
 
-  private boolean isNewEntry(int prevLogIndex) {
-    return prevLogIndex == getLastIndex();
-  }
-
   private int getLastIndex() {
     return this.entries.size();
   }
