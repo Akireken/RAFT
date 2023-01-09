@@ -1,10 +1,10 @@
 package octo.raft;
 
-public class Result {
+public class AppendEntryResult {
   private boolean status;
   private int term;
 
-  public Result(boolean status, int term) {
+  public AppendEntryResult(boolean status, int term) {
 
     this.status = status;
     this.term = term;

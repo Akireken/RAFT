@@ -13,9 +13,9 @@ public class Main {
   private static Random rand = new Random();
 
   public static void main(String[] args) throws InterruptedException {
-    Node node1 = new Node(1);
-    Node node2 = new Node(1);
-    Node node3 = new Node(1);
+    Node node1 = new Node(1, false);
+    Node node2 = new Node(1, false);
+    Node node3 = new Node(1, false);
     List<Node> cluster = List.of(node1, node2, node3);
 
     Executors.newCachedThreadPool().execute(() -> {

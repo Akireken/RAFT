@@ -8,24 +8,35 @@ public class Node {
   private final List<Entry> entries;
   private int lastCommitIndex = 0;
 
-  public Node(int currentTerm) {
+  private boolean isLeader;
+
+  public Node(int currentTerm, boolean isLeader) {
     this.currentTerm = currentTerm;
     this.entries = new ArrayList<>();
+    this.isLeader = isLeader;
   }
 
-  public Result appendEntries(Entry entry, int leaderTerm, int prevLogIndex, int prevLogTerm, int lastCommitIndex) {
+  public void acceptMessage(String message){
+    if(!isLeader){
+      throw new RuntimeException("Je ne peux pas accepter de message, je ne suis pas leader");
+    }
+    entries.add(new Entry(message, this.currentTerm));
+
+  }
+
+  public AppendEntryResult appendEntries(Entry entry, int leaderTerm, int prevLogIndex, int prevLogTerm, int lastCommitIndex) {
     if (leaderTerm < this.currentTerm) {
-      return new Result(false, this.currentTerm);
+      return new AppendEntryResult(false, this.currentTerm);
     }
     if(isPreviousEntryUnknown(prevLogIndex, prevLogTerm)){
-      return new Result(false, this.currentTerm);
+      return new AppendEntryResult(false, this.currentTerm);
     }
     if (!entry.isHeartbeat()) {
       appendOrReplace(entry, prevLogIndex);
     }
     this.lastCommitIndex = Math.min(lastCommitIndex, this.getLastIndex());
     this.currentTerm = leaderTerm;
-    return new Result(true, leaderTerm);
+    return new AppendEntryResult(true, leaderTerm);
   }
 
   private boolean isPreviousEntryUnknown(int prevLogIndex, int prevLogTerm) {
