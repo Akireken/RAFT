@@ -1,13 +1,17 @@
 package octo.raft;
 
+import octo.raft.view.ReplicationRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class AppendEntryTest {
+  @Mock
+  private ReplicationRepository replicationRepository;
 
 
 // Quand un client me demande un état, je renvois l'état de tout les logs commités
@@ -18,7 +22,7 @@ class AppendEntryTest {
   @Test
   void testHeartBeat() {
     // given
-    Node node = new Node(0, false);
+    Node node = new Node(0, false, replicationRepository);
 
     // when
     AppendEntryResult result = node.appendEntries(new Entry(), 0, 0, 0, 0);
@@ -32,7 +36,7 @@ class AppendEntryTest {
   @Test
   void testPrevLogIndexInitialInvalid() {
     // given
-    Node node = new Node(0, false);
+    Node node = new Node(0, false, replicationRepository);
     Entry pizza = new Entry("pizza", 0);
 
     // when
@@ -46,7 +50,7 @@ class AppendEntryTest {
   @Test
   void testHeartBeatInvalide() {
     // given
-    Node node = new Node(1, false);
+    Node node = new Node(1, false, replicationRepository);
 
     // when
     AppendEntryResult result = node.appendEntries(new Entry(), 0, 0, 0, 0);
@@ -60,7 +64,7 @@ class AppendEntryTest {
   @Test
   void testHeartBeat3() {
     // given
-    Node node = new Node(1, false);
+    Node node = new Node(1, false, replicationRepository);
 
     // when
     AppendEntryResult result = node.appendEntries(new Entry(null, 0), 2, 0, 0, 0);
@@ -75,7 +79,7 @@ class AppendEntryTest {
   @Test
   void testMiseAJourTerm3() {
     // given
-    Node node = new Node(1, false);
+    Node node = new Node(1, false, replicationRepository);
 
     // when
     AppendEntryResult result = node.appendEntries(new Entry("pizza1", 0), 2, 0, 0, 0);
@@ -90,7 +94,7 @@ class AppendEntryTest {
   @Test
   void testReceptionEntry() {
     // given
-    Node node = new Node(1, false);
+    Node node = new Node(1, false, replicationRepository);
 
     // when
     Entry pizza = new Entry("pizza", 0);
@@ -104,7 +108,7 @@ class AppendEntryTest {
   @Test
   void testHeartbeatNeModifiePasLesEntries() {
     // given
-    Node node = new Node(1, false);
+    Node node = new Node(1, false, replicationRepository);
 
     // when
     node.appendEntries(new Entry(), 1, 0, 0, 0);
@@ -117,7 +121,7 @@ class AppendEntryTest {
   @Test
   void test10() {
     // given
-    Node node = new Node(2, false);
+    Node node = new Node(2, false, replicationRepository);
 
     // when
     AppendEntryResult result = node.appendEntries(new Entry("pizza", 0), 1, 0, 0, 0);
@@ -131,7 +135,7 @@ class AppendEntryTest {
   @Test
   void test11() {
     // given
-    Node node = new Node(2, false);
+    Node node = new Node(2, false, replicationRepository);
     Entry pizza = new Entry("pizza", 0);
     node.appendEntries(pizza, 2, 0, 0, 0);
     Entry pomme = new Entry("pomme", 0);
@@ -149,7 +153,7 @@ class AppendEntryTest {
   @Test
   void test12() {
     // given
-    Node node = new Node(2, false);
+    Node node = new Node(2, false, replicationRepository);
     Entry pizza1 = new Entry("pizza1", 0);
     Entry pizza2 = new Entry("pizza2", 0);
     Entry pizza3 = new Entry("pizza3", 0);
@@ -176,7 +180,7 @@ class AppendEntryTest {
   @Test
   void test13() {
     // given
-    Node node = new Node(2, false);
+    Node node = new Node(2, false, replicationRepository);
     Entry pizza1 = new Entry("pizza1", 0);
     Entry pizza2 = new Entry("pizza2", 0);
     Entry pizza3 = new Entry("pizza3", 0);
@@ -201,7 +205,7 @@ class AppendEntryTest {
   @Test
   void test14() {
     // given
-    Node node = new Node(2, false);
+    Node node = new Node(2, false, replicationRepository);
     Entry pizza1 = new Entry("pizza1", 0);
     Entry pizza2 = new Entry("pizza2", 0);
     Entry pizza3 = new Entry("pizza3", 0);
@@ -222,7 +226,7 @@ class AppendEntryTest {
   @Test
   void test15() {
     // given
-    Node node = new Node(2, false);
+    Node node = new Node(2, false, replicationRepository);
     Entry pizza1 = new Entry("pizza1", 0);
     node.appendEntries(pizza1, 2, 0, 0, 0);
 
@@ -241,7 +245,7 @@ class AppendEntryTest {
   @Test
   void test16() {
     // given
-    Node node = new Node(0, false);
+    Node node = new Node(0, false, replicationRepository);
     Entry pizza1 = new Entry("pizza1",1);
     Entry pizza2 = new Entry("pizza2", 1);
     Entry pizza3 = new Entry("pizza3",2);
@@ -263,7 +267,7 @@ class AppendEntryTest {
   @Test
   void test17() {
     // given
-    Node node = new Node(0, false);
+    Node node = new Node(0, false, replicationRepository);
     Entry pizza1 = new Entry("pizza1",1);
     Entry pizza2 = new Entry("pizza2", 1);
     Entry pizza3 = new Entry("pizza3",3);
@@ -289,7 +293,7 @@ class AppendEntryTest {
   @DisplayName("Quand le leader m'envoi un message avec un lastCommitIndex à 1, et que j'ai un message déjà stocké, je  recois un message commité 1, alors le lastCommitIndex du noeud passe à 1")
   public void test_de_premier_message_commit() {
     // given
-    Node node = new Node(0, false);
+    Node node = new Node(0, false, replicationRepository);
     Entry message = new Entry("pizza1",0);
     node.appendEntries(message, 0, 0, 0, 0);
 
@@ -304,7 +308,7 @@ class AppendEntryTest {
   @DisplayName("Quand le server démmare, lastCommitIndex est à 0")
   public void test18() {
     // when
-    Node node = new Node(0, false);
+    Node node = new Node(0, false, replicationRepository);
 
     // then
     assertEquals(node.getLastCommitIndex(), 0);
@@ -314,7 +318,7 @@ class AppendEntryTest {
   @DisplayName("Quand le lastCommitIndex est > au dernier logIndex alors le lastCommitIndex du noeud sera le dernier logIndex")
   public void test19() {
     // given
-    Node node = new Node(0, false);
+    Node node = new Node(0, false, replicationRepository);
     Entry message = new Entry("pizza1",0);
     node.appendEntries(message, 0, 0, 0, 0);
 
@@ -329,7 +333,7 @@ class AppendEntryTest {
   @DisplayName("Quand deux messages sont reçu avec un lastCommitIndex = 2, alors le lastCommitIndex du noeud doit être de 2")
   public void test20() {
     // given
-    Node node = new Node(0, false);
+    Node node = new Node(0, false, replicationRepository);
     Entry message = new Entry("pizza1",0);
     Entry message2 = new Entry("pizza2",0);
     node.appendEntries(message, 0, 0, 0, 0);
@@ -345,7 +349,7 @@ class AppendEntryTest {
   @DisplayName("Quand trois messages sont reçu avec un lastCommitIndex = 2, alors le lastCommitIndex du noeud doit être de 2")
   public void test21() {
     // given
-    Node node = new Node(0, false);
+    Node node = new Node(0, false, replicationRepository);
     Entry message = new Entry("pizza1",0);
     Entry message2 = new Entry("pizza2",0);
     Entry message3 = new Entry("pizza3",0);
@@ -363,7 +367,7 @@ class AppendEntryTest {
   @DisplayName("Quand on recois un message invalid pour cause de prevLogIndex invalid, le lastCommitIndex n'est pas mis à jour")
   public void test22() {
     // given
-    Node node = new Node(0, false);
+    Node node = new Node(0, false, replicationRepository);
     Entry message = new Entry("pizza1",0);
     Entry message3 = new Entry("pizza3",0);
     node.appendEntries(message, 0, 0, 0, 0);
