@@ -1,5 +1,7 @@
 package octo.raft;
 
+import octo.raft.view.ReplicationRepository;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,11 +9,12 @@ public class Node {
   private int currentTerm;
   private final List<Entry> entries;
   private int lastCommitIndex = 0;
-
   private boolean isLeader;
+  private final ReplicationRepository replicationRepository;
 
-  public Node(int currentTerm, boolean isLeader) {
+  public Node(int currentTerm, boolean isLeader, ReplicationRepository replicationRepository) {
     this.currentTerm = currentTerm;
+    this.replicationRepository = replicationRepository;
     this.entries = new ArrayList<>();
     this.isLeader = isLeader;
   }
@@ -21,7 +24,6 @@ public class Node {
       throw new RuntimeException("Je ne peux pas accepter de message, je ne suis pas leader");
     }
     entries.add(new Entry(message, this.currentTerm));
-
   }
 
   public AppendEntryResult appendEntries(Entry entry, int leaderTerm, int prevLogIndex, int prevLogTerm, int lastCommitIndex) {
