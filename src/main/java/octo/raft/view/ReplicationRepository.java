@@ -1,7 +1,9 @@
 package octo.raft.view;
 
-public class ReplicationRepository {
-  public void replicate() {
+import octo.raft.Entry;
 
+public class ReplicationRepository {
+  public boolean replicate(Entry expectedEntry) {
+    return false;
   }
 }

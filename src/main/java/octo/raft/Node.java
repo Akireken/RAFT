@@ -23,7 +23,11 @@ public class Node {
     if(!isLeader){
       throw new RuntimeException("Je ne peux pas accepter de message, je ne suis pas leader");
     }
-    entries.add(new Entry(message, this.currentTerm));
+    Entry newEntry = new Entry(message, this.currentTerm);
+    entries.add(newEntry);
+    if(replicationRepository.replicate(newEntry)){
+      lastCommitIndex++;
+    }
   }
 
   public AppendEntryResult appendEntries(Entry entry, int leaderTerm, int prevLogIndex, int prevLogTerm, int lastCommitIndex) {
