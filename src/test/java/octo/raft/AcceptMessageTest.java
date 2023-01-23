@@ -35,6 +35,7 @@ public class AcceptMessageTest {
     // Given
     Node node = new Node(1, true, replicationRepository);
     String message = "pizza1";
+    when(replicationRepository.replicate(any())).thenReturn(true);
 
     // When
     node.acceptMessage(message);
@@ -53,7 +54,9 @@ public class AcceptMessageTest {
     when(replicationRepository.replicate(any())).thenReturn(false);
 
     // When
-    node.acceptMessage(message);
+    try {
+      node.acceptMessage(message);
+    } catch (Exception e) {}
 
     // Then
     assertEquals(0, node.getLastCommitIndex());
@@ -81,9 +84,13 @@ public class AcceptMessageTest {
     // Given
     Node node = new Node(1, true, replicationRepository);
     String message = "pizza1";
+    when(replicationRepository.replicate(any())).thenReturn(true);
 
     // When
+    try {
     node.acceptMessage(message);
+    } catch (Exception e) {}
+
 
     // Then
     Entry expectedEntry = new Entry(message, 1);
@@ -147,10 +154,30 @@ public class AcceptMessageTest {
     node.acceptMessage(message2);
 
     // When
-    node.acceptMessage(message3);
-
+   try {
+     node.acceptMessage(message3);
+   } catch (Exception e) {}
     // Then
     assertEquals(2, node.getLastCommitIndex());
+  }
+
+  @Test
+  @DisplayName("Quand un leader n'arrive pas a repliquer un message sur le quorum, il envoie un erreur")
+  void test8() {
+    // given
+    Node node = new Node(1, true, replicationRepository);
+    String message1 = "pizza1";
+    Entry entry1 = new Entry(message1, 1);
+    when(replicationRepository.replicate(entry1)).thenReturn(false);
+
+    // when/then
+    try {
+      node.acceptMessage(message1);
+      fail();
+    } catch (Exception e) {
+      assertEquals("Impossible de repliquer le message: " + message1, e.getMessage());
+    }
+
   }
 
 }
