@@ -15,6 +15,7 @@ class AppendEntryTest {
 
 
 // Quand un client me demande un état, je renvois l'état de tout les logs commités
+// Quand je suis leader et que je reçois un message avec un currentTerm plus grand que le mien, je deviens follower
 // T0D0 : comprendre à quoi sert la condition !isNewEntry(prevLogIndex)
 
 
