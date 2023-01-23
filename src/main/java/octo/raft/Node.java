@@ -27,6 +27,8 @@ public class Node {
     entries.add(newEntry);
     if(replicationRepository.replicate(newEntry)){
       lastCommitIndex++;
+    } else {
+      throw new RuntimeException("Impossible de repliquer le message: " + message);
     }
   }
 
