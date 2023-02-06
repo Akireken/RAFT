@@ -15,7 +15,7 @@ public class ReplicationFollowers {
 
   public boolean replicate(Entry expectedEntry, int leaderTerm, int prevLogIndex, int prevLogTerm, int lastCommitIndex) {
     for (String follower : followers) {
-      if (!repository.call(follower, expectedEntry)) {
+      if (!repository.send(follower, expectedEntry)) {
         return false;
       }
     }

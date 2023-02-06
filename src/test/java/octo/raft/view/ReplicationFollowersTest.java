@@ -26,14 +26,14 @@ class ReplicationFollowersTest {
     Entry entry = new Entry("pizza1", 1);
     List<String> followers = List.of("node1", "node2");
     Repository repository = mock(Repository.class);
-    when(repository.call("node1", entry)).thenReturn(true);
-    when(repository.call("node2", entry)).thenReturn(true);
+    when(repository.send("node1", entry)).thenReturn(true);
+    when(repository.send("node2", entry)).thenReturn(true);
     ReplicationFollowers replicationFollowers = new ReplicationFollowers(followers, repository);
 
     boolean status = replicationFollowers.replicate(entry, 1, 0, 0, 0);
 
-    verify(repository).call("node1", entry);
-    verify(repository).call("node2", entry);
+    verify(repository).send("node1", entry);
+    verify(repository).send("node2", entry);
     assertTrue(status);
   }
 
