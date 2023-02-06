@@ -1,6 +1,6 @@
 package octo.raft;
 
-import octo.raft.view.ReplicationRepository;
+import octo.raft.view.ReplicationFollowers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,11 +10,11 @@ public class Node {
   private final List<Entry> entries;
   private int lastCommitIndex = 0;
   private boolean isLeader;
-  private final ReplicationRepository replicationRepository;
+  private final ReplicationFollowers replicationFollowers;
 
-  public Node(int currentTerm, boolean isLeader, ReplicationRepository replicationRepository) {
+  public Node(int currentTerm, boolean isLeader, ReplicationFollowers replicationFollowers) {
     this.currentTerm = currentTerm;
-    this.replicationRepository = replicationRepository;
+    this.replicationFollowers = replicationFollowers;
     this.entries = new ArrayList<>();
     this.isLeader = isLeader;
   }
@@ -23,14 +23,32 @@ public class Node {
     if(!isLeader){
       throw new RuntimeException("Je ne peux pas accepter de message, je ne suis pas leader");
     }
+    int prevLogTerm = getPrevLogTerm();
+    int prevLogIndex = getLastIndex();
     Entry newEntry = new Entry(message, this.currentTerm);
     entries.add(newEntry);
-    if(replicationRepository.replicate(newEntry)){
+    if(replicationFollowers.replicate(newEntry, currentTerm, prevLogIndex, prevLogTerm, lastCommitIndex)){
       lastCommitIndex++;
       return true;
     } else {
       return false;
     }
+  }
+
+  private int getPrevLogTerm() {
+    Entry lastEntry = getLastEntry();
+    if (lastEntry != null) {
+      return lastEntry.getTerm();
+    }
+    return 0;
+  }
+
+  private Entry getLastEntry() {
+    Entry entry = null;
+    if(entries.size() > 0) {
+      entry = entries.get(entries.size() - 1);
+    }
+    return entry;
   }
 
   public AppendEntryResult appendEntries(Entry entry, int leaderTerm, int prevLogIndex, int prevLogTerm, int lastCommitIndex) {
