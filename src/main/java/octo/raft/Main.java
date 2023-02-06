@@ -1,7 +1,7 @@
 package octo.raft;
 
 import octo.raft.view.ConsoleView;
-import octo.raft.view.ReplicationRepository;
+import octo.raft.view.ReplicationFollowers;
 import org.apache.commons.lang3.RandomStringUtils;
 
 import java.util.List;
@@ -14,19 +14,19 @@ public class Main {
   private static Random rand = new Random();
 
   public static void main(String[] args) throws InterruptedException {
-    ReplicationRepository replicationRepository = new ReplicationRepository();
-
-    Node node1 = new Node(1, false, replicationRepository);
-    Node node2 = new Node(1, false, replicationRepository);
-    Node node3 = new Node(1, false, replicationRepository);
-    List<Node> cluster = List.of(node1, node2, node3);
-
-    Executors.newCachedThreadPool().execute(() -> {
-      doStuff(cluster);
-    });
-
-    ConsoleView view = new ConsoleView();
-    view.start(cluster);
+//    ReplicationFollowers replicationFollowers = new ReplicationFollowers();
+//
+//    Node node1 = new Node(1, false, replicationFollowers);
+//    Node node2 = new Node(1, false, replicationFollowers);
+//    Node node3 = new Node(1, false, replicationFollowers);
+//    List<Node> cluster = List.of(node1, node2, node3);
+//
+//    Executors.newCachedThreadPool().execute(() -> {
+//      doStuff(cluster);
+//    });
+//
+//    ConsoleView view = new ConsoleView();
+//    view.start(cluster);
   }
 
   private static void doStuff(List<Node> cluster) {
