@@ -19,7 +19,7 @@ public class Node {
     this.isLeader = isLeader;
   }
 
-  public void acceptMessage(String message){
+  public boolean acceptMessage(String message){
     if(!isLeader){
       throw new RuntimeException("Je ne peux pas accepter de message, je ne suis pas leader");
     }
@@ -27,8 +27,9 @@ public class Node {
     entries.add(newEntry);
     if(replicationRepository.replicate(newEntry)){
       lastCommitIndex++;
+      return true;
     } else {
-      throw new RuntimeException("Impossible de repliquer le message: " + message);
+      return false;
     }
   }
 

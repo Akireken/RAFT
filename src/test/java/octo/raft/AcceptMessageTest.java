@@ -8,6 +8,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -17,7 +18,7 @@ import static org.mockito.Mockito.when;
 
 public class AcceptMessageTest {
 
-  private ReplicationRepository replicationRepository = mock(ReplicationRepository.class);
+  private final ReplicationRepository replicationRepository = mock(ReplicationRepository.class);
 
   // Le leader réplique le message reçu d'un client à tous les followers
   // Le leader retente d'envoyer un message à un follower tant qu'il n'est pas up
@@ -54,9 +55,7 @@ public class AcceptMessageTest {
     when(replicationRepository.replicate(any())).thenReturn(false);
 
     // When
-    try {
-      node.acceptMessage(message);
-    } catch (Exception e) {}
+    node.acceptMessage(message);
 
     // Then
     assertEquals(0, node.getLastCommitIndex());
@@ -87,10 +86,7 @@ public class AcceptMessageTest {
     when(replicationRepository.replicate(any())).thenReturn(true);
 
     // When
-    try {
     node.acceptMessage(message);
-    } catch (Exception e) {}
-
 
     // Then
     Entry expectedEntry = new Entry(message, 1);
@@ -154,9 +150,8 @@ public class AcceptMessageTest {
     node.acceptMessage(message2);
 
     // When
-   try {
-     node.acceptMessage(message3);
-   } catch (Exception e) {}
+    node.acceptMessage(message3);
+
     // Then
     assertEquals(2, node.getLastCommitIndex());
   }
@@ -171,13 +166,26 @@ public class AcceptMessageTest {
     when(replicationRepository.replicate(entry1)).thenReturn(false);
 
     // when/then
-    try {
-      node.acceptMessage(message1);
-      fail();
-    } catch (Exception e) {
-      assertEquals("Impossible de repliquer le message: " + message1, e.getMessage());
-    }
+    boolean status = node.acceptMessage(message1);
 
+    // Then
+    assertFalse(status);
   }
+
+  @Test
+  @DisplayName("Quand un leader accepte un message d'un client, et qu'il a été acquitté par le quorum, il acquitte le message")
+  void test9() {
+    // Given
+    Node node = new Node(1, true, replicationRepository);
+    String message = "pizza1";
+    when(replicationRepository.replicate(any())).thenReturn(true);
+
+    // When
+    boolean status = node.acceptMessage(message);
+
+    // Then
+    assertTrue(status);
+  }
+
 
 }
