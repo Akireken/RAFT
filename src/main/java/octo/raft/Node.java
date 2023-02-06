@@ -19,7 +19,7 @@ public class Node {
     this.isLeader = isLeader;
   }
 
-  public boolean acceptMessage(String message){
+  public boolean acceptClientMessage(String message){
     if(!isLeader){
       throw new RuntimeException("Je ne peux pas accepter de message, je ne suis pas leader");
     }
