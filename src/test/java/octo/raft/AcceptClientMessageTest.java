@@ -20,7 +20,6 @@ public class AcceptClientMessageTest {
   private final ReplicationFollowers replicationFollowers = mock(ReplicationFollowers.class);
 
   // Le leader réplique le message reçu d'un client à tous les followers
-  // Le leader retente d'envoyer un message à un follower tant qu'il n'est pas up
   // Le leader timeout après un certain temps s'il n'a pas une réplication sur le quorum
   // Le leader envoit un heartbeat à interval régulier
   // Après avoir reçu un rejet du follower, le leader tente d'envoyer le message précédent
