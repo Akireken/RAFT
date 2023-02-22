@@ -12,14 +12,21 @@ Date : 20/02/2023
 - Miranda (LIMI)
 - Cédric (CEM)
 
+## Précédement
+
+On a commencé la mise en place du leader deux sessions auparavant via la mise en place des couches hautes.
+On a un leader qui est capable de prendre un message d'un client, de l'enregistrer et de déléguer la réplication sur les followers.
+On a un début d'orchestration de réplication sur les followers, en synchrone, en série et qu'on considère en échec à la moindre erreur sans notion de quorum.
+
+
 ## Objectifs de la session
 
 ### Définir si la réplication est reussi sur le quorum 
 
-Jusqu'a maintenant, la réplication se faisait de manière séquentiel et était marqué en erreur dès qu'un follower n'arrivait pas à répliquer le message.
 Le but de la session a été de : 
-- définir si la réplication est reussi si le quorum est atteint.
-- de mettre en place un mécanisme de réplication en parallèle.
+- définir si la réplication est reussi quand la donnée est répliqué sur le quorum
+- mettre en place un mécanisme de réplication en parallèle
+- 
 ## Réalisation
 
 #### Ajout du concept de quorum
