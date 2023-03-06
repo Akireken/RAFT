@@ -38,6 +38,10 @@ public class ReplicationFollowers {
     } catch (InterruptedException e) {
       throw new RuntimeException(e);
     }
+    return isReplicatedInQuorum(nbSuccess);
+  }
+
+  private boolean isReplicatedInQuorum(AtomicInteger nbSuccess) {
     return nbSuccess.get() >= (followers.size() + 1) / 2 + 1;
   }
 }
