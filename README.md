@@ -4,6 +4,10 @@ This pet project is a RAFT consensus implementation
 aiming at encreasing our comprenhension some core concepts about 
 consensus in distributed environment.
 
+# Why
+
+
+
 ## Running localy
 
 ### Prerequisit
