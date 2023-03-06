@@ -1,6 +1,7 @@
 package octo.raft;
 
-import octo.raft.view.ReplicationFollowers;
+import octo.raft.entity.Entry;
+import octo.raft.replication.ReplicationFollowers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

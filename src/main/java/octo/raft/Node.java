@@ -1,6 +1,8 @@
 package octo.raft;
 
-import octo.raft.view.ReplicationFollowers;
+import octo.raft.entity.AppendEntryResult;
+import octo.raft.entity.Entry;
+import octo.raft.replication.ReplicationFollowers;
 
 import java.util.ArrayList;
 import java.util.List;
