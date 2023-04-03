@@ -1,4 +1,4 @@
-package octo.raft;
+package octo.raft.entity;
 
 public class AppendEntryResult {
   private boolean status;

@@ -1,6 +1,6 @@
-package octo.raft.view;
+package octo.raft.replication;
 
-import octo.raft.Entry;
+import octo.raft.entity.Entry;
 
 public interface Repository {
 

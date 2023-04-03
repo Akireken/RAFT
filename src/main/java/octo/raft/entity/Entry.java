@@ -1,4 +1,4 @@
-package octo.raft;
+package octo.raft.entity;
 
 import java.util.Objects;
 

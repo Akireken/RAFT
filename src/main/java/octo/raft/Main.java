@@ -1,12 +1,10 @@
 package octo.raft;
 
-import octo.raft.view.ConsoleView;
-import octo.raft.view.ReplicationFollowers;
+import octo.raft.entity.Entry;
 import org.apache.commons.lang3.RandomStringUtils;
 
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.Executors;
 
 public class Main {
 
