@@ -28,7 +28,7 @@ class ReplicationFollowersTest {
 
   @Test
   @DisplayName("Quand ReplicationFollowers est appelé sur un cluster de 3 noeuds, il réplique sur chaque follower et notifie que le message est safely replicated")
-  void name() {
+  void name() throws InterruptedException {
     Entry entry = new Entry("pizza1", 1);
     List<String> followers = List.of("follower1", "follower2");
     Repository repository = mock(Repository.class);
@@ -38,8 +38,10 @@ class ReplicationFollowersTest {
 
     boolean isSafelyReplicated = replicationFollowers.replicate(entry, 1, 0, 0, 0);
 
-    verify(repository).send("follower1", entry, 1, 0, 0, 0);
+    // Le temps que le message soit envoyé à tous les followers
+    sleep(100);
     verify(repository).send("follower2", entry, 1, 0, 0, 0);
+    verify(repository).send("follower1", entry, 1, 0, 0, 0);
     assertTrue(isSafelyReplicated);
   }
 

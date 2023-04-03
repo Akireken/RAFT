@@ -9,17 +9,17 @@ public class RepositoryTestImpl implements Repository {
 
     private final Map<String, Node> nodesList;
 
-    public RepositoryTestImpl() {
+    public RepositoryTestImpl(int currentTerm) {
 
         this.nodesList = Map.of(
-            "follower1", new Node(1, false, null),
-            "follower2", new Node(1, false, null));
+            "follower1", new Node(currentTerm, false, null),
+            "follower2", new Node(currentTerm, false, null));
     }
 
     @Override
-    public boolean send(String node, Entry entry, int leaderTerm, int prevLogIndex, int prevLogTerm, int lastCommitIndex) {
-
-        return false;
+    public boolean send(String nodeName, Entry entry, int leaderTerm, int prevLogIndex, int prevLogTerm, int lastCommitIndex) {
+        Node node = retrieveNode(nodeName);
+        return node.appendEntries(entry, leaderTerm, prevLogIndex, prevLogTerm, lastCommitIndex).getStatus();
     }
 
     public Node retrieveNode(String follower) {
