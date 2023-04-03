@@ -12,12 +12,12 @@ import static java.lang.Thread.sleep;
 public class ReplicationFollowers {
   private static final int LEADER_SUCCESS = 1;
   private final List<String> followers;
-  private final Repository repository;
+  private final FollowerRepository followerRepository;
   private final ExecutorService threadpool;
 
-  public ReplicationFollowers(List<String> followers, Repository repository) {
+  public ReplicationFollowers(List<String> followers, FollowerRepository followerRepository) {
     this.followers = followers;
-    this.repository = repository;
+    this.followerRepository = followerRepository;
     this.threadpool = Executors.newCachedThreadPool();
   }
 
@@ -26,7 +26,7 @@ public class ReplicationFollowers {
     AtomicInteger nbFailures = new AtomicInteger(0);
     for (String follower : followers) {
       threadpool.execute(() -> {
-        if (repository.send(follower, expectedEntry, leaderTerm, prevLogIndex, prevLogTerm, lastCommitIndex)) {
+        if (followerRepository.send(follower, expectedEntry, leaderTerm, prevLogIndex, prevLogTerm, lastCommitIndex)) {
           nbSuccess.getAndIncrement();
         } else{
           nbFailures.getAndIncrement();

@@ -5,11 +5,11 @@ import octo.raft.entity.Entry;
 
 import java.util.Map;
 
-public class RepositoryTestImpl implements Repository {
+public class FollowerRepositoryTestImpl implements FollowerRepository {
 
     private final Map<String, Node> nodesList;
 
-    public RepositoryTestImpl(int currentTerm) {
+    public FollowerRepositoryTestImpl(int currentTerm) {
 
         this.nodesList = Map.of(
             "follower1", new Node(currentTerm, false, null),

@@ -6,9 +6,9 @@ public class Entry {
   private String value;
   private int term;
 
-  public Entry(String value, int terme) {
+  public Entry(String value, int term) {
     this.value = value;
-    this.term = terme;
+    this.term = term;
   }
 
   public Entry() {}

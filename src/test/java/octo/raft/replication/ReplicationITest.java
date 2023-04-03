@@ -16,7 +16,7 @@ public class ReplicationITest {
     @Test
     @DisplayName("Quand le leader réplique un message, les followers ont enregistré le message et le message est commité")
     public void test() throws InterruptedException {
-        RepositoryTestImpl testRepository = new RepositoryTestImpl(1);
+        FollowerRepositoryTestImpl testRepository = new FollowerRepositoryTestImpl(1);
         Node leader = new Node(1, true, new ReplicationFollowers(
             List.of("follower1", "follower2"),
             testRepository));
@@ -35,7 +35,7 @@ public class ReplicationITest {
     @Test
     @DisplayName("Quand tous les noeud répondent en erreur, alors le messaged n'est pas commité")
     public void test2() throws InterruptedException {
-        RepositoryTestImpl testRepository = new RepositoryTestImpl(2);
+        FollowerRepositoryTestImpl testRepository = new FollowerRepositoryTestImpl(2);
         Node leader = new Node(1, true, new ReplicationFollowers(
           List.of("follower1", "follower2"),
           testRepository));

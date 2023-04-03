@@ -7,6 +7,8 @@ import octo.raft.replication.ReplicationFollowers;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.Thread.sleep;
+
 public class Node {
   private int currentTerm;
   private final List<Entry> entries;
@@ -110,5 +112,12 @@ public class Node {
 
   public int getLastCommitIndex() {
     return this.lastCommitIndex;
+  }
+
+  public void initHeartbeat(int i) throws InterruptedException {
+    while (true) {
+      sleep(i);
+      this.replicationFollowers.replicate(new Entry(), this.currentTerm, getLastIndex(), getPrevLogTerm(), lastCommitIndex);
+    }
   }
 }

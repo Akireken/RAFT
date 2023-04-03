@@ -1,8 +1,6 @@
 package octo.raft.replication;
 
 import octo.raft.entity.Entry;
-import octo.raft.replication.ReplicationFollowers;
-import octo.raft.replication.Repository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -31,17 +29,17 @@ class ReplicationFollowersTest {
   void name() throws InterruptedException {
     Entry entry = new Entry("pizza1", 1);
     List<String> followers = List.of("follower1", "follower2");
-    Repository repository = mock(Repository.class);
-    when(repository.send("follower1", entry, 1, 0, 0, 0)).thenReturn(true);
-    when(repository.send("follower2", entry, 1, 0, 0, 0)).thenReturn(true);
-    ReplicationFollowers replicationFollowers = new ReplicationFollowers(followers, repository);
+    FollowerRepository followerRepository = mock(FollowerRepository.class);
+    when(followerRepository.send("follower1", entry, 1, 0, 0, 0)).thenReturn(true);
+    when(followerRepository.send("follower2", entry, 1, 0, 0, 0)).thenReturn(true);
+    ReplicationFollowers replicationFollowers = new ReplicationFollowers(followers, followerRepository);
 
     boolean isSafelyReplicated = replicationFollowers.replicate(entry, 1, 0, 0, 0);
 
     // Le temps que le message soit envoyé à tous les followers
     sleep(100);
-    verify(repository).send("follower2", entry, 1, 0, 0, 0);
-    verify(repository).send("follower1", entry, 1, 0, 0, 0);
+    verify(followerRepository).send("follower2", entry, 1, 0, 0, 0);
+    verify(followerRepository).send("follower1", entry, 1, 0, 0, 0);
     assertTrue(isSafelyReplicated);
   }
 
@@ -50,10 +48,10 @@ class ReplicationFollowersTest {
   void name2() {
     Entry entry = new Entry("pizza1", 1);
     List<String> followers = List.of("follower1", "follower2");
-    Repository repository = mock(Repository.class);
-    when(repository.send("follower1", entry, 1, 0, 0, 0)).thenReturn(false);
-    when(repository.send("follower2", entry, 1, 0, 0, 0)).thenReturn(false);
-    ReplicationFollowers replicationFollowers = new ReplicationFollowers(followers, repository);
+    FollowerRepository followerRepository = mock(FollowerRepository.class);
+    when(followerRepository.send("follower1", entry, 1, 0, 0, 0)).thenReturn(false);
+    when(followerRepository.send("follower2", entry, 1, 0, 0, 0)).thenReturn(false);
+    ReplicationFollowers replicationFollowers = new ReplicationFollowers(followers, followerRepository);
 
     boolean isSafelyReplicated = replicationFollowers.replicate(entry, 1, 0, 0, 0);
 
@@ -65,10 +63,10 @@ class ReplicationFollowersTest {
   void name3() {
     Entry entry = new Entry("pizza1", 1);
     List<String> followers = List.of("follower1", "follower2");
-    Repository repository = mock(Repository.class);
-    when(repository.send("follower1", entry, 1, 0, 0, 0)).thenReturn(true);
-    when(repository.send("follower2", entry, 1, 0, 0, 0)).thenReturn(false);
-    ReplicationFollowers replicationFollowers = new ReplicationFollowers(followers, repository);
+    FollowerRepository followerRepository = mock(FollowerRepository.class);
+    when(followerRepository.send("follower1", entry, 1, 0, 0, 0)).thenReturn(true);
+    when(followerRepository.send("follower2", entry, 1, 0, 0, 0)).thenReturn(false);
+    ReplicationFollowers replicationFollowers = new ReplicationFollowers(followers, followerRepository);
 
     boolean isSafelyReplicated = replicationFollowers.replicate(entry, 1, 0, 0, 0);
 
@@ -80,12 +78,12 @@ class ReplicationFollowersTest {
   void name4() {
     Entry entry = new Entry("pizza1", 1);
     List<String> followers = List.of("follower1", "follower2", "follower3", "follower4");
-    Repository repository = mock(Repository.class);
-    when(repository.send("follower1", entry, 1, 0, 0, 0)).thenReturn(true);
-    when(repository.send("follower2", entry, 1, 0, 0, 0)).thenReturn(false);
-    when(repository.send("follower3", entry, 1, 0, 0, 0)).thenReturn(false);
-    when(repository.send("follower4", entry, 1, 0, 0, 0)).thenReturn(false);
-    ReplicationFollowers replicationFollowers = new ReplicationFollowers(followers, repository);
+    FollowerRepository followerRepository = mock(FollowerRepository.class);
+    when(followerRepository.send("follower1", entry, 1, 0, 0, 0)).thenReturn(true);
+    when(followerRepository.send("follower2", entry, 1, 0, 0, 0)).thenReturn(false);
+    when(followerRepository.send("follower3", entry, 1, 0, 0, 0)).thenReturn(false);
+    when(followerRepository.send("follower4", entry, 1, 0, 0, 0)).thenReturn(false);
+    ReplicationFollowers replicationFollowers = new ReplicationFollowers(followers, followerRepository);
 
     boolean isSafelyReplicated = replicationFollowers.replicate(entry, 1, 0, 0, 0);
 
@@ -97,12 +95,12 @@ class ReplicationFollowersTest {
   void name5() {
     Entry entry = new Entry("pizza1", 1);
     List<String> followers = List.of("follower1", "follower2", "follower3", "follower4");
-    Repository repository = mock(Repository.class);
-    when(repository.send("follower1", entry, 1, 0, 0, 0)).thenReturn(true);
-    when(repository.send("follower2", entry, 1, 0, 0, 0)).thenReturn(true);
-    when(repository.send("follower3", entry, 1, 0, 0, 0)).thenReturn(false);
-    when(repository.send("follower4", entry, 1, 0, 0, 0)).thenReturn(false);
-    ReplicationFollowers replicationFollowers = new ReplicationFollowers(followers, repository);
+    FollowerRepository followerRepository = mock(FollowerRepository.class);
+    when(followerRepository.send("follower1", entry, 1, 0, 0, 0)).thenReturn(true);
+    when(followerRepository.send("follower2", entry, 1, 0, 0, 0)).thenReturn(true);
+    when(followerRepository.send("follower3", entry, 1, 0, 0, 0)).thenReturn(false);
+    when(followerRepository.send("follower4", entry, 1, 0, 0, 0)).thenReturn(false);
+    ReplicationFollowers replicationFollowers = new ReplicationFollowers(followers, followerRepository);
 
     boolean isSafelyReplicated = replicationFollowers.replicate(entry, 1, 0, 0, 0);
 
@@ -114,10 +112,10 @@ class ReplicationFollowersTest {
   void name6() {
     Entry entry = new Entry("pizza1", 1);
     List<String> followers = List.of("follower1", "follower2");
-    Repository repository = mock(Repository.class);
-    when(repository.send("follower1", entry, 1, 0, 0, 0)).thenReturn(true);
-    when(repository.send("follower2", entry, 1, 0, 0, 0)).thenReturn(true);
-    ReplicationFollowers replicationFollowers = new ReplicationFollowers(followers, repository);
+    FollowerRepository followerRepository = mock(FollowerRepository.class);
+    when(followerRepository.send("follower1", entry, 1, 0, 0, 0)).thenReturn(true);
+    when(followerRepository.send("follower2", entry, 1, 0, 0, 0)).thenReturn(true);
+    ReplicationFollowers replicationFollowers = new ReplicationFollowers(followers, followerRepository);
 
     boolean isSafelyReplicated = replicationFollowers.replicate(entry, 1, 0, 0, 0);
 
@@ -130,12 +128,12 @@ class ReplicationFollowersTest {
     // Given
     Entry entry = new Entry("pizza1", 1);
     List<String> followers = List.of("follower1", "follower2", "follower3", "follower4");
-    Repository repository = mock(Repository.class);
-    when(repository.send(anyString(), any(), eq(1), eq(0), eq(0), eq(0))).then(invocation -> {
+    FollowerRepository followerRepository = mock(FollowerRepository.class);
+    when(followerRepository.send(anyString(), any(), eq(1), eq(0), eq(0), eq(0))).then(invocation -> {
       sleep(100);
       return true;
     });
-    ReplicationFollowers replicationFollowers = new ReplicationFollowers(followers, repository);
+    ReplicationFollowers replicationFollowers = new ReplicationFollowers(followers, followerRepository);
 
     // When
     long start = System.currentTimeMillis();
@@ -152,16 +150,16 @@ class ReplicationFollowersTest {
     // Given
     Entry entry = new Entry("pizza1", 1);
     List<String> followers = List.of("follower1", "follower2");
-    Repository repository = mock(Repository.class);
-    when(repository.send(eq("follower1"), any(), eq(1), eq(0), eq(0), eq(0))).then(invocation -> {
+    FollowerRepository followerRepository = mock(FollowerRepository.class);
+    when(followerRepository.send(eq("follower1"), any(), eq(1), eq(0), eq(0), eq(0))).then(invocation -> {
       sleep(100);
       return true;
     });
-    when(repository.send(eq("follower2"), any(), eq(1), eq(0), eq(0), eq(0))).then(invocation -> {
+    when(followerRepository.send(eq("follower2"), any(), eq(1), eq(0), eq(0), eq(0))).then(invocation -> {
       sleep(200);
       return true;
     });
-    ReplicationFollowers replicationFollowers = new ReplicationFollowers(followers, repository);
+    ReplicationFollowers replicationFollowers = new ReplicationFollowers(followers, followerRepository);
 
     // When
     long start = System.currentTimeMillis();
@@ -178,19 +176,19 @@ class ReplicationFollowersTest {
     // Given
     Entry entry = new Entry("pizza1", 1);
     List<String> followers = List.of("follower1", "follower2");
-    Repository repository = mock(Repository.class);
+    FollowerRepository followerRepository = mock(FollowerRepository.class);
     AtomicInteger nbEffectivesReplications = new AtomicInteger(0);
-    when(repository.send(eq("follower1"), any(), eq(1), eq(0), eq(0), eq(0))).then(invocation -> {
+    when(followerRepository.send(eq("follower1"), any(), eq(1), eq(0), eq(0), eq(0))).then(invocation -> {
       sleep(100);
       nbEffectivesReplications.getAndIncrement();
       return true;
     });
-    when(repository.send(eq("follower2"), any(), eq(1), eq(0), eq(0), eq(0))).then(invocation -> {
+    when(followerRepository.send(eq("follower2"), any(), eq(1), eq(0), eq(0), eq(0))).then(invocation -> {
       sleep(500);
       nbEffectivesReplications.getAndIncrement();
       return true;
     });
-    ReplicationFollowers replicationFollowers = new ReplicationFollowers(followers, repository);
+    ReplicationFollowers replicationFollowers = new ReplicationFollowers(followers, followerRepository);
 
     // When
     replicationFollowers.replicate(entry, 1, 0, 0, 0);
