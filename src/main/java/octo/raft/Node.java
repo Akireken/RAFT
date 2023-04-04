@@ -6,6 +6,10 @@ import octo.raft.replication.ReplicationFollowers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import static java.lang.Thread.sleep;
 
@@ -15,6 +19,8 @@ public class Node {
   private int lastCommitIndex = 0;
   private boolean isLeader;
   private final ReplicationFollowers replicationFollowers;
+
+  private ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
 
   public Node(int currentTerm, boolean isLeader, ReplicationFollowers replicationFollowers) {
     this.currentTerm = currentTerm;
@@ -114,10 +120,12 @@ public class Node {
     return this.lastCommitIndex;
   }
 
-  public void initHeartbeat(int i) throws InterruptedException {
-    while (true) {
-      sleep(i);
-      this.replicationFollowers.replicate(new Entry(), this.currentTerm, getLastIndex(), getPrevLogTerm(), lastCommitIndex);
-    }
+  public void initHeartbeat(int i)  {
+    scheduledExecutorService.scheduleAtFixedRate(() -> {
+      if (isLeader) {
+        System.out.println("hey");
+        replicationFollowers.replicate(new Entry(), currentTerm, getLastIndex(), getPrevLogTerm(), lastCommitIndex);
+      }
+    }, 100, i, TimeUnit.MILLISECONDS);
   }
 }
